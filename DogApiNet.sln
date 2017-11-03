@@ -3,9 +3,32 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2006
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DogApiNet", "src\DogApiNet\DogApiNet.csproj", "{C3D98078-153C-42C1-A550-E020435F48C2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sandbox", "Sandbox", "{D0BC56B6-FD03-45C6-9BE3-280D3A7BEB5B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleCoreApp", "sandbox\ConsoleCoreApp\ConsoleCoreApp.csproj", "{C87CE4CF-E5CA-47FC-BE6D-920B12DCE408}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C3D98078-153C-42C1-A550-E020435F48C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3D98078-153C-42C1-A550-E020435F48C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3D98078-153C-42C1-A550-E020435F48C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3D98078-153C-42C1-A550-E020435F48C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C87CE4CF-E5CA-47FC-BE6D-920B12DCE408}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C87CE4CF-E5CA-47FC-BE6D-920B12DCE408}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C87CE4CF-E5CA-47FC-BE6D-920B12DCE408}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C87CE4CF-E5CA-47FC-BE6D-920B12DCE408}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C87CE4CF-E5CA-47FC-BE6D-920B12DCE408} = {D0BC56B6-FD03-45C6-9BE3-280D3A7BEB5B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7B86E012-8E41-45FD-AF01-794A32CF9561}

@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "ConsoleCoreApp": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DATADOG_APP_KEY": "",
+        "DATADOG_API_KEY": ""
+      }
+    }
+  }
+}
