@@ -30,43 +30,36 @@ namespace DogApiNet
 
         public override async Task<DogApiHttpResponseContent> RequestAsync(HttpMethod method, string url, NameValueCollection headers, NameValueCollection @params, DogApiHttpRequestContent requestContent, CancellationToken cancelToken)
         {
-            HttpContent httpContent = null;
-            try
+            using (var request = new HttpRequestMessage(method, CreateUrlWithQueryString(url, @params)))
             {
-                using (var request = new HttpRequestMessage(method, CreateUrlWithQueryString(url, @params)))
+                if (headers != null)
                 {
-                    if (headers != null)
+                    foreach (var headerName in headers.AllKeys)
                     {
-                        foreach (var headerName in headers.AllKeys)
-                        {
-                            request.Headers.Add(headerName, headers.GetValues(headerName));
-                        }
-                    }
-
-                    if (requestContent != null)
-                    {
-                        httpContent = new ByteArrayContent(requestContent.Data);
-                        httpContent.Headers.ContentType = new MediaTypeHeaderValue(requestContent.ContentType);
-                    }
-
-                    using (var response = await httpClient.SendAsync(request, cancelToken))
-                    {
-                        CheckStatusCode(response.StatusCode);
-                        try
-                        {
-                            var content = await response.Content.ReadAsByteArrayAsync();
-                            return new DogApiHttpResponseContent() { StatusCode = response.StatusCode, Data = content };
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new DogApiClientHttpException(ex);
-                        }
+                        request.Headers.Add(headerName, headers.GetValues(headerName));
                     }
                 }
-            }
-            finally
-            {
-                if (httpContent != null) httpContent.Dispose();
+
+                if (requestContent != null)
+                {
+                    var httpContent = new ByteArrayContent(requestContent.Data);
+                    httpContent.Headers.ContentType = new MediaTypeHeaderValue(requestContent.ContentType);
+                    request.Content = httpContent;
+                }
+
+                using (var response = await httpClient.SendAsync(request, cancelToken))
+                {
+                    CheckStatusCode(response.StatusCode);
+                    try
+                    {
+                        var content = await response.Content.ReadAsByteArrayAsync();
+                        return new DogApiHttpResponseContent() { StatusCode = response.StatusCode, Data = content };
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new DogApiClientHttpException(ex);
+                    }
+                }
             }
         }
 

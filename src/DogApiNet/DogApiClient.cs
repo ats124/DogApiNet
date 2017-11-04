@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Runtime.Serialization;
 
 using Utf8Json;
+using System.Text;
 
 namespace DogApiNet
 {
@@ -37,7 +38,9 @@ namespace DogApiNet
 
         private async Task<T> RequestAsync<T>(HttpMethod method, string path, NameValueCollection @params, DogApiHttpRequestContent data, CancellationToken? cancelToken)
         {
-            @params = new NameValueCollection(@params);
+            @params = @params == null 
+                ? new NameValueCollection()
+                : new NameValueCollection(@params);
             @params.Add("api_key", ApiKey);
             if (AppKey != null)
             {
@@ -91,6 +94,43 @@ namespace DogApiNet
             }
         }
 
+        [ThreadStatic]
+        private static StringBuilder _buffer;
+        public static (string key, string value) DeconstructTag(string tag)
+        {
+            if (_buffer == null || _buffer.Capacity > 256)
+            {
+                _buffer = new StringBuilder(256);
+            }
+            else
+            {
+                _buffer.Clear();
+            }
+
+            int i = 0;
+            for (; i < tag.Length; i++)
+            {
+                if (tag[i] == ':')
+                {
+                    i++;
+                    break;
+                }
+                else
+                {
+                    _buffer.Append(tag[i]);
+                }
+            }
+            var key = _buffer.ToString();
+
+            _buffer.Clear();
+            for (; i < tag.Length; i++)
+            {
+                _buffer.Append(tag[i]);
+            }
+            var value = _buffer.ToString();
+
+            return (key, value);
+        }
         #region IDisposable Support
         private bool disposedValue = false; // 重複する呼び出しを検出するには
 

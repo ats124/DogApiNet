@@ -12,10 +12,25 @@ namespace ConsoleCoreApp
 
             using (var client = new DogApiClient(apiKey, appKey))
             {
-                var end = DateTimeOffset.Now;
-                var start = end.AddMinutes(-10);
+                var postResult = client.Event.PostAsync(new DogEventPostParameter("TEST TITLE")
+                {
+                    Text = "AAA",
+                    AlertType = "Info",
+                    Tags = new[] { "test:1" },
+                    AggregationKey = "AAA",
+                }).Result;
 
-                var events = client.Event.QueryAsync(start, end).Result;
+                postResult = client.Event.PostAsync(new DogEventPostParameter("TEST TITLE")
+                {
+                    Text = "AAA",
+                    AlertType = "Info",
+                    Tags = new[] { "test:1" },
+                    AggregationKey = "AAA",
+                }).Result;
+
+                var getResult = client.Event.GetAsync(postResult.Event.Id).Result;
+
+                var deleteResult = client.Event.DeleteAsync(getResult.Event.Id).Result;
             }
         }
     }
