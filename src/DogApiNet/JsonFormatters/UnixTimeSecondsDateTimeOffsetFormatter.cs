@@ -12,7 +12,7 @@ namespace DogApiNet.JsonFormatters
 
         public DateTimeOffset Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
         {
-            return DateTimeOffset.FromUnixTimeSeconds(reader.ReadInt64());
+            return DogApiUtil.UnixTimeSecondsToDateTimeOffset(reader.ReadInt64());
         }
 
         public void Serialize(ref JsonWriter writer, DateTimeOffset value, IJsonFormatterResolver formatterResolver)
@@ -33,7 +33,7 @@ namespace DogApiNet.JsonFormatters
             }
             else
             {
-                return DateTimeOffset.FromUnixTimeSeconds(reader.ReadInt64());
+                return DogApiUtil.UnixTimeSecondsToDateTimeOffset(reader.ReadInt64());
             }
         }
 

@@ -1,14 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <TargetFrameworks>netstandard2.0;NET45;NET47</TargetFrameworks>
+        <Configurations>Debug;Release;</Configurations>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Authors>ats124</Authors>
+        <PackageLicenseUrl>https://github.com/ats124/DogApiNet/blob/master/LICENSE</PackageLicenseUrl>
+        <PackageTags>Datadog</PackageTags>
+        <PackageProjectUrl>https://github.com/ats124/DogApiNet</PackageProjectUrl>
+    <Version>1.0.0-alpha1</Version>
+    <AssemblyVersion>1.0.0.1</AssemblyVersion>
+    <FileVersion>1.0.0.1</FileVersion>
     <Description>.NET client for Datadog's API</Description>
-    <Authors>ats124</Authors>
-    <Company />
-    <PackageTags>Datadog</PackageTags>
-    <PackageProjectUrl>https://github.com/ats124/DogApiNet</PackageProjectUrl>
-    <Version>0.1.0-beta</Version>
   </PropertyGroup>
 
   <ItemGroup>

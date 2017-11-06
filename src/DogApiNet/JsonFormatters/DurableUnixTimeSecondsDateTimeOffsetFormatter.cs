@@ -35,7 +35,7 @@ namespace DogApiNet.JsonFormatters
                 lngValue = Utf8Json.Internal.NumberConverter.ReadInt64(number.Array, number.Offset, out _);
             }
 
-            return DateTimeOffset.FromUnixTimeSeconds(lngValue);
+            return DogApiUtil.UnixTimeSecondsToDateTimeOffset(lngValue);
         }
 
         public void Serialize(ref JsonWriter writer, DateTimeOffset value, IJsonFormatterResolver formatterResolver)
@@ -90,7 +90,7 @@ namespace DogApiNet.JsonFormatters
                         return null;
                     }
                 }
-                return DateTimeOffset.FromUnixTimeSeconds(reader.ReadInt64());
+                return DogApiUtil.UnixTimeSecondsToDateTimeOffset(reader.ReadInt64());
             }
         }
 

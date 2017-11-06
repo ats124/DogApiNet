@@ -139,7 +139,7 @@ namespace DogApiNet
         public DogEventGetResultEvent()
         {
             _tagsAsDictionary = new Lazy<ILookup<string, string>>(() =>
-                (Tags ?? Array.Empty<string>()).Select(x => DogApiClient.DeconstructTag(x)).ToLookup(x => x.key, x => x.value));
+                (Tags ?? new string[0]).Select(x => DogApiClient.DeconstructTag(x)).ToLookup(x => x.key, x => x.value));
         }
     }
 
@@ -212,7 +212,7 @@ namespace DogApiNet
         public DogEventQueryResultEvent()
         {
             _tagsAsDictionary = new Lazy<ILookup<string, string>>(() => 
-                (Tags ?? Array.Empty<string>()).Select(x => DogApiClient.DeconstructTag(x)).ToLookup(x => x.key, x => x.value));
+                (Tags ?? new string[0]).Select(x => DogApiClient.DeconstructTag(x)).ToLookup(x => x.key, x => x.value));
         }
     }
 

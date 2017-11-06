@@ -24,7 +24,7 @@ namespace DogApiNet.JsonFormatters
                 if (!reader.ReadIsEndArrayWithSkipValueSeparator(ref count))
                 {
                     var dec = DecimalFormatter.Default.Deserialize(ref reader, formatterResolver);  /* 小数点がついてくるのでDecimalFormatterを使う */
-                    timestamp = DateTimeOffset.FromUnixTimeMilliseconds((long)dec);
+                    timestamp = DogApiUtil.UnixTimeMillisecondsToDateTimeOffset((long)dec);
                 }
                 else
                 {
