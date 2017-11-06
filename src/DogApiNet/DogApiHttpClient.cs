@@ -14,19 +14,6 @@ namespace DogApiNet
 
         public abstract Task<DogApiHttpResponseContent> RequestAsync(HttpMethod method, string url, NameValueCollection headers, NameValueCollection @params, DogApiHttpRequestContent data, CancellationToken cancelToken);
 
-        protected static readonly HttpStatusCode[] EXISTS_DATA_ERROR_STATUS_CODE = new[]
-        {
-            HttpStatusCode.BadRequest, HttpStatusCode.Forbidden, HttpStatusCode.Conflict, HttpStatusCode.Gone
-        };
-
-        protected void CheckStatusCode(HttpStatusCode code)
-        {
-            if (((int)code < 200 || (int)code >= 300) && Array.IndexOf(EXISTS_DATA_ERROR_STATUS_CODE, code) < 0)
-            {
-                throw new DogApiClientHttpException(code);
-            }
-        }
-
         #region IDisposable Support
         private bool disposedValue = false; // 重複する呼び出しを検出するには
 
@@ -59,6 +46,7 @@ namespace DogApiNet
     public class DogApiHttpResponseContent
     {
         public HttpStatusCode StatusCode { get; set; }
+        public string MediaType { get; set; }
         public byte[] Data { get; set; }
     }
 

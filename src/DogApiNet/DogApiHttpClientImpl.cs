@@ -49,11 +49,10 @@ namespace DogApiNet
 
                 using (var response = await httpClient.SendAsync(request, cancelToken))
                 {
-                    CheckStatusCode(response.StatusCode);
                     try
                     {
                         var content = await response.Content.ReadAsByteArrayAsync();
-                        return new DogApiHttpResponseContent() { StatusCode = response.StatusCode, Data = content };
+                        return new DogApiHttpResponseContent() { StatusCode = response.StatusCode, Data = content, MediaType = response.Content.Headers?.ContentType?.MediaType };
                     }
                     catch (Exception ex)
                     {

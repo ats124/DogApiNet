@@ -81,16 +81,23 @@ namespace DogApiNet
             }
             else
             {
-                DogApiErrorInfo errorInfo;
-                try
+                if (content.MediaType == "application/json")
                 {
-                    errorInfo = JsonSerializer.Deserialize<DogApiErrorInfo>(content.Data);
+                    DogApiErrorInfo errorInfo;
+                    try
+                    {
+                        errorInfo = JsonSerializer.Deserialize<DogApiErrorInfo>(content.Data);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new DogApiClientInvalidJsonException(content.Data, ex);
+                    }
+                    throw new DogApiErrorException(content.StatusCode, errorInfo.Errors);
                 }
-                catch (Exception ex)
+                else
                 {
-                    throw new DogApiClientInvalidJsonException(content.Data, ex);
+                    throw new DogApiClientHttpException(content.StatusCode);
                 }
-                throw new DogApiErrorException(content.StatusCode, errorInfo.Errors);
             }
         }
 
