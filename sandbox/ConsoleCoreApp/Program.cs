@@ -34,8 +34,9 @@ namespace ConsoleCoreApp
 
                 //var result = client.Metric.GetListAsync(DateTimeOffset.Now - TimeSpan.FromDays(1)).Result;
 
-                var resutl = client.Metric.PostAsync(new DogMetricPostParameter("test.metric", DateTimeOffset.Now, 123.4)).Result;
+                //var resutl = client.Metric.PostAsync(new DogMetricPostParameter("test.metric", DateTimeOffset.Now, 123.4)).Result;
 
+                var result = client.Metric.QueryAsync(DateTimeOffset.Now - TimeSpan.FromDays(1), DateTimeOffset.Now, "test.metric{*}by{host}").Result;
             }
         }
     }

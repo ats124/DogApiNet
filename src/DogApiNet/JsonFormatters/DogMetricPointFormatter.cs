@@ -23,7 +23,8 @@ namespace DogApiNet.JsonFormatters
                 var count = 0;
                 if (!reader.ReadIsEndArrayWithSkipValueSeparator(ref count))
                 {
-                    timestamp = DurableUnixTimeSecondsDateTimeOffsetFormatter.Default.Deserialize(ref reader, formatterResolver);
+                    var dec = DecimalFormatter.Default.Deserialize(ref reader, formatterResolver);  /* 小数点がついてくるのでDecimalFormatterを使う */
+                    timestamp = DateTimeOffset.FromUnixTimeMilliseconds((long)dec);
                 }
                 else
                 {
@@ -58,7 +59,7 @@ namespace DogApiNet.JsonFormatters
             {
                 writer.WriteBeginArray();
 
-                DurableUnixTimeSecondsDateTimeOffsetFormatter.Default.Serialize(ref writer, value.Timestamp, formatterResolver);
+                UnixTimeMillisecondsDateTimeOffsetFormatter.Default.Serialize(ref writer, value.Timestamp, formatterResolver);
                 writer.WriteValueSeparator();
                 writer.WriteDouble(value.Value);
 
