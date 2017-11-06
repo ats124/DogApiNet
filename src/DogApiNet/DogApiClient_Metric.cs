@@ -17,6 +17,8 @@ namespace DogApiNet
     public interface IMetricApi
     {
         Task<DogMetricGetListResult> GetListAsync(DateTimeOffset from, CancellationToken? cancelToken = null);
+
+        Task<DogMetricPostResult> PostAsync(DogMetricPostParameter param, CancellationToken? cancelToken = null);
     }
 
     public class DogMetricGetListResult
@@ -27,6 +29,57 @@ namespace DogApiNet
         [DataMember(Name = "from")]
         [JsonFormatter(typeof(DurableUnixTimeSecondsDateTimeOffsetFormatter))]
         public DateTimeOffset From { get; set; }
+    }
+
+    public class DogMetricPostParameter
+    {
+        [DataMember(Name = "metric")]
+        public string Metric { get; set; }
+
+        [DataMember(Name = "points")]
+        public DogMetricPoint[] Points { get; set; }
+
+        [DataMember(Name = "host")]
+        public string Host { get; set; }
+
+        [DataMember(Name = "tags")]
+        public string[] Tags { get; set; }
+
+        [DataMember(Name = "type")]
+        public string Type { get; set; }
+
+        public DogMetricPostParameter(string metric, DogMetricPoint[] points)
+        {
+            Metric = metric;
+            Points = points;
+        }
+
+        public DogMetricPostParameter(string metric, DateTimeOffset timestamp, double value) : this(metric, new DogMetricPoint[] { new DogMetricPoint(timestamp, value) })
+        {
+        }
+    }
+
+    public class DogMetricPostResult
+    {
+        [DataMember(Name = "status")]
+        public string Status { get; set; }
+    }
+
+    [JsonFormatter(typeof(DogMetricPointFormatter))]
+    public class DogMetricPoint
+    {
+        public DateTimeOffset Timestamp { get; set; }
+        public double Value { get; set; }
+
+        public DogMetricPoint()
+        {
+        }
+
+        public DogMetricPoint(DateTimeOffset timestamp, double value)
+        {
+            Timestamp = timestamp;
+            Value = value;
+        }
     }
 
     partial class DogApiClient : IMetricApi
@@ -41,6 +94,11 @@ namespace DogApiNet
             };
             return await RequestAsync<DogMetricGetListResult>(HttpMethod.Get, $"/api/v1/metrics", @params, null, cancelToken);
         }
-    }
 
+        async Task<DogMetricPostResult> IMetricApi.PostAsync(DogMetricPostParameter param, CancellationToken? cancelToken)
+        {
+            var data = new DogApiHttpRequestContent("application/json", JsonSerializer.Serialize(param, Utf8Json.Resolvers.StandardResolver.ExcludeNull));
+            return await RequestAsync<DogMetricPostResult>(HttpMethod.Post, "/api/v1/series", null, data, cancelToken);
+        }
+    }
 }

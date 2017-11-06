@@ -32,7 +32,9 @@ namespace ConsoleCoreApp
 
                 //var deleteResult = client.Event.DeleteAsync(getResult.Event.Id).Result;
 
-                var result = client.Metric.GetListAsync(DateTimeOffset.Now - TimeSpan.FromDays(1)).Result;
+                //var result = client.Metric.GetListAsync(DateTimeOffset.Now - TimeSpan.FromDays(1)).Result;
+
+                var resutl = client.Metric.PostAsync(new DogMetricPostParameter("test.metric", DateTimeOffset.Now, 123.4)).Result;
 
             }
         }
