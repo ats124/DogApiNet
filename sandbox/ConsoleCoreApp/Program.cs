@@ -38,7 +38,8 @@ namespace ConsoleCoreApp
 
                 //var result = client.Metric.QueryAsync(DateTimeOffset.Now - TimeSpan.FromDays(1), DateTimeOffset.Now, "test.metric{*}by{host}").Result;
 
-                var resutl = client.Metadata.GetAsync("test.metric").Result;
+                var updateResult = client.Metadata.UpdateAsync(new DogMetadataUpdateParameter("test.metric") { Description = null, ShortName = null, PerUnit = null, Unit = null, Type = null, StatsDInterval = null }).Result;
+                var getResutl = client.Metadata.GetAsync("test.metric").Result;
             }
         }
     }
