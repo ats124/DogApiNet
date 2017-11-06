@@ -2,6 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>.NET client for Datadog's API</Description>
+    <Authors>ats124</Authors>
+    <Company />
+    <PackageTags>Datadog</PackageTags>
+    <PackageProjectUrl>https://github.com/ats124/DogApiNet</PackageProjectUrl>
+    <Version>0.1.0-beta</Version>
   </PropertyGroup>
 
   <ItemGroup>
