@@ -54,6 +54,10 @@ namespace DogApiNet
                         var content = await response.Content.ReadAsByteArrayAsync();
                         return new DogApiHttpResponseContent() { StatusCode = response.StatusCode, Data = content, MediaType = response.Content.Headers?.ContentType?.MediaType };
                     }
+                    catch (OperationCanceledException)
+                    {
+                        throw;
+                    }
                     catch (Exception ex)
                     {
                         throw new DogApiClientHttpException(ex);
