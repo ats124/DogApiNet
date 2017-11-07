@@ -81,7 +81,7 @@ namespace DogApiNet
             }
             else
             {
-                if (content.MediaType == "application/json")
+                if (content.MediaType == "application/json" || content.MediaType == "text/json")
                 {
                     DogApiErrorInfo errorInfo;
                     try
