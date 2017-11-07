@@ -164,13 +164,13 @@ namespace DogApiNet
             {
                 { "from", from.ToUnixTimeSeconds().ToString() }
             };
-            return await RequestAsync<DogMetricGetListResult>(HttpMethod.Get, $"/api/v1/metrics", @params, null, cancelToken);
+            return await RequestAsync<DogMetricGetListResult>(HttpMethod.Get, $"/api/v1/metrics", @params, null, cancelToken).ConfigureAwait(false);
         }
 
         async Task<DogMetricPostResult> IMetricApi.PostAsync(DogMetricPostParameter param, CancellationToken? cancelToken)
         {
             var data = new DogApiHttpRequestContent("application/json", JsonSerializer.Serialize(param, Utf8Json.Resolvers.StandardResolver.ExcludeNull));
-            return await RequestAsync<DogMetricPostResult>(HttpMethod.Post, "/api/v1/series", null, data, cancelToken);
+            return await RequestAsync<DogMetricPostResult>(HttpMethod.Post, "/api/v1/series", null, data, cancelToken).ConfigureAwait(false);
         }
 
         async Task<DogMetricQueryResult> IMetricApi.QueryAsync(DateTimeOffset from, DateTimeOffset to, string query, CancellationToken? cancelToken)
@@ -181,7 +181,7 @@ namespace DogApiNet
                 { "to", to.ToUnixTimeSeconds().ToString() },
                 { "query", query },
             };
-            return await RequestAsync<DogMetricQueryResult>(HttpMethod.Get, $"/api/v1/query", @params, null, cancelToken);
+            return await RequestAsync<DogMetricQueryResult>(HttpMethod.Get, $"/api/v1/query", @params, null, cancelToken).ConfigureAwait(false);
         }
 
     }

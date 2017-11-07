@@ -98,13 +98,13 @@ namespace DogApiNet
 
         async Task<DogMetadataGetResult> IMetadataApi.GetAsync(string metric, CancellationToken? cancelToken)
         {
-            return await RequestAsync<DogMetadataGetResult>(HttpMethod.Get, $"/api/v1/metrics/{metric}", null, null, cancelToken);
+            return await RequestAsync<DogMetadataGetResult>(HttpMethod.Get, $"/api/v1/metrics/{metric}", null, null, cancelToken).ConfigureAwait(false);
         }
 
         async Task<DogMetadataUpdateResult> IMetadataApi.UpdateAsync(DogMetadataUpdateParameter param, CancellationToken? cancelToken)
         {
             var data = new DogApiHttpRequestContent("application/json", JsonSerializer.Serialize(param));
-            return await RequestAsync<DogMetadataUpdateResult>(HttpMethod.Put, $"/api/v1/metrics/{param.Metric}", null, data, cancelToken);
+            return await RequestAsync<DogMetadataUpdateResult>(HttpMethod.Put, $"/api/v1/metrics/{param.Metric}", null, data, cancelToken).ConfigureAwait(false);
         }
     }
 }

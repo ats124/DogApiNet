@@ -19,7 +19,7 @@ namespace DogApiNet
             {
                 try
                 {
-                    return await RequestAsync(method, url, headers, @params, data, csc.Token);
+                    return await RequestAsync(method, url, headers, @params, data, csc.Token).ConfigureAwait(false);
                 }
                 catch (OperationCanceledException)
                 {
@@ -47,11 +47,11 @@ namespace DogApiNet
                     request.Content = httpContent;
                 }
 
-                using (var response = await httpClient.SendAsync(request, cancelToken))
+                using (var response = await httpClient.SendAsync(request, cancelToken).ConfigureAwait(false))
                 {
                     try
                     {
-                        var content = await response.Content.ReadAsByteArrayAsync();
+                        var content = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
                         return new DogApiHttpResponseContent() { StatusCode = response.StatusCode, Data = content, MediaType = response.Content.Headers?.ContentType?.MediaType };
                     }
                     catch (OperationCanceledException)

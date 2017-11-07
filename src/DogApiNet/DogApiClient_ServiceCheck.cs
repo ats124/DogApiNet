@@ -61,7 +61,7 @@ namespace DogApiNet
         async Task<DogServiceCheckPostResult> IServiceCheckApi.PostAsync(DogServiceCheckPostParameter param, CancellationToken? cancelToken)
         {
             var data = new DogApiHttpRequestContent("application/json", JsonSerializer.Serialize(param, Utf8Json.Resolvers.StandardResolver.ExcludeNull));
-            return await RequestAsync<DogServiceCheckPostResult>(HttpMethod.Post, "/api/v1/check_run", null, data, cancelToken);
+            return await RequestAsync<DogServiceCheckPostResult>(HttpMethod.Post, "/api/v1/check_run", null, data, cancelToken).ConfigureAwait(false);
         }
 
     }
