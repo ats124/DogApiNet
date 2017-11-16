@@ -1,48 +1,45 @@
 ﻿using System;
+using System.Runtime.Serialization;
+using Utf8Json;
 using DogApiNet;
+using DogApiNet.Json;
+using DogApiNet.JsonFormatters;
 
 namespace ConsoleCoreApp
 {
+    [JsonFormatter(typeof(OptionalPropertySupportFormatter<TestClass>))]
+    public class TestClass : OptionalPropertySupport<TestClass>
+    {
+        public string TestPropA { get => (string)GetValue(); set => SetValue(value); }
+
+        public long TestPropB { get => (int)GetValue(); set => SetValue(value); }
+
+        [DataMember(Name = "propc")]
+        [JsonFormatter(typeof(Utf8Json.Formatters.UnixTimestampDateTimeFormatter))]
+        public DateTime TestPropC { get => (DateTime)GetValue(); set => SetValue(value); }
+    }
+
     class Program
     {
         static void Main(string[] args)
         {
-            var apiKey = Environment.GetEnvironmentVariable("DATADOG_API_KEY");
-            var appKey = Environment.GetEnvironmentVariable("DATADOG_APP_KEY");
+            var obj = new TestClass();
+            Console.WriteLine(JsonSerializer.ToJsonString(obj));    // output: {}
 
-            using (var client = new DogApiClient(apiKey, appKey))
-            {
-                //var postResult = client.Event.PostAsync(new DogEventPostParameter("TEST TITLE")
-                //{
-                //    Text = "AAA",
-                //    AlertType = "Info",
-                //    Tags = new[] { "test:1" },
-                //    AggregationKey = "AAA",
-                //}).Result;
+            obj.TestPropA = "hoge";
+            Console.WriteLine(JsonSerializer.ToJsonString(obj));    // output: {"TestPropA":"hoge"}
 
-                //postResult = client.Event.PostAsync(new DogEventPostParameter("TEST TITLE")
-                //{
-                //    Text = "AAA",
-                //    AlertType = "Info",
-                //    Tags = new[] { "test:1" },
-                //    AggregationKey = "AAA",
-                //}).Result;
+            obj.TestPropB = 1000;
+            Console.WriteLine(JsonSerializer.ToJsonString(obj));    // output: {"TestPropA":"hoge","TestPropB":1000}
 
-                //var getResult = client.Event.GetAsync(postResult.Event.Id).Result;
+            obj.TestPropC = new DateTime(1970, 1, 1, 0, 0, 10, DateTimeKind.Utc);
+            Console.WriteLine(JsonSerializer.ToJsonString(obj));    // output: {"TestPropA":"hoge","TestPropB":100,"TestPropC":10}
 
-                //var deleteResult = client.Event.DeleteAsync(getResult.Event.Id).Result;
+            obj.TestPropA = null;
+            Console.WriteLine(JsonSerializer.ToJsonString(obj));    // output: {"TestPropA":null,"TestPropB":100,"TestPropC":10}
 
-                //var result = client.Metric.GetListAsync(DateTimeOffset.Now - TimeSpan.FromDays(1)).Result;
-
-                //var resutl = client.Metric.PostAsync(new DogMetricPostParameter("test.metric", DateTimeOffset.Now, 123.4)).Result;
-
-                //var result = client.Metric.QueryAsync(DateTimeOffset.Now - TimeSpan.FromDays(1), DateTimeOffset.Now, "test.metric{*}by{host}").Result;
-
-                //var updateResult = client.Metadata.UpdateAsync(new DogMetadataUpdateParameter("test.metric") { Description = null, ShortName = null, PerUnit = null, Unit = null, Type = null, StatsDInterval = null }).Result;
-                //var getResutl = client.Metadata.GetAsync("test.metric").Result;
-                var result = client.ServiceCheck.PostAsync(new DogServiceCheckPostParameter("app.is_ok", "test", 1)).Result;
-                result = client.ServiceCheck.PostAsync(new DogServiceCheckPostParameter("app.is_ok_2", "test", 1) { Message = "message", Timestamp = DateTimeOffset.Now, Tags = new[] { "testtag:1" } }).Result;
-            }
+            obj.Unset(x => x.TestPropA);
+            Console.WriteLine(JsonSerializer.ToJsonString(obj));    // output: {"TestPropB":100,"TestPropC":10}
         }
     }
 }
