@@ -8,9 +8,9 @@
         <PackageLicenseUrl>https://github.com/ats124/DogApiNet/blob/master/LICENSE</PackageLicenseUrl>
         <PackageTags>Datadog</PackageTags>
         <PackageProjectUrl>https://github.com/ats124/DogApiNet</PackageProjectUrl>
-    <Version>1.0.0-alpha2</Version>
-    <AssemblyVersion>1.0.0.2</AssemblyVersion>
-    <FileVersion>1.0.0.2</FileVersion>
+    <Version>1.0.0-alpha3</Version>
+    <AssemblyVersion>1.0.0.3</AssemblyVersion>
+    <FileVersion>1.0.0.3</FileVersion>
     <Description>.NET client for Datadog's API</Description>
   </PropertyGroup>
 
