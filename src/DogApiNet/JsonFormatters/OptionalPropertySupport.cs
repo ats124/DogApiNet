@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 using System.Collections.ObjectModel;
 using Utf8Json;
 
-namespace DogApiNet.Json
+namespace DogApiNet.JsonFormatters
 {
     public abstract class OptionalPropertySupport<T> where T : OptionalPropertySupport<T>
     {

@@ -7,8 +7,6 @@ using Utf8Json.Formatters;
 
 namespace DogApiNet.JsonFormatters
 {
-    using Json;
-
     public sealed class OptionalPropertySupportFormatter<T> : IJsonFormatter<T> 
         where T : OptionalPropertySupport<T>, new()
     {
