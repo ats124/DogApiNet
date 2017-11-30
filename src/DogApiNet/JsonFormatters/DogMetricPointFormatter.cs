@@ -10,61 +10,48 @@ namespace DogApiNet.JsonFormatters
     {
         public DogMetricPoint Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
         {
-            if (reader.ReadIsNull())
+            reader.ReadIsBeginArrayWithVerify();
+
+            DateTimeOffset timestamp;
+            double value;
+            var count = 0;
+            if (!reader.ReadIsEndArrayWithSkipValueSeparator(ref count))
             {
-                return null;
+                var dec = DecimalFormatter.Default.Deserialize(ref reader, formatterResolver);  /* 小数点がついてくるのでDecimalFormatterを使う */
+                Console.WriteLine(dec);
+                timestamp = DogApiUtil.UnixTimeMillisecondsToDateTimeOffset((long)dec);
             }
             else
             {
-                reader.ReadIsBeginArrayWithVerify();
-
-                DateTimeOffset timestamp;
-                double value;
-                var count = 0;
-                if (!reader.ReadIsEndArrayWithSkipValueSeparator(ref count))
-                {
-                    var dec = DecimalFormatter.Default.Deserialize(ref reader, formatterResolver);  /* 小数点がついてくるのでDecimalFormatterを使う */
-                    timestamp = DogApiUtil.UnixTimeMillisecondsToDateTimeOffset((long)dec);
-                }
-                else
-                {
-                    throw new JsonParsingException("invalid point json data");
-                }
-
-                if (!reader.ReadIsEndArrayWithSkipValueSeparator(ref count))
-                {
-                    value = reader.ReadDouble();
-                }
-                else
-                {
-                    throw new JsonParsingException("invalid point json data");
-                }
-
-                if (!reader.ReadIsEndArrayWithSkipValueSeparator(ref count))
-                {
-                    throw new JsonParsingException("invalid point json data");
-                }
-
-                return new DogMetricPoint() { Timestamp = timestamp, Value = value };
+                throw new JsonParsingException("invalid point json data");
             }
+
+            if (!reader.ReadIsEndArrayWithSkipValueSeparator(ref count))
+            {
+                value = reader.ReadDouble();
+            }
+            else
+            {
+                throw new JsonParsingException("invalid point json data");
+            }
+
+            if (!reader.ReadIsEndArrayWithSkipValueSeparator(ref count))
+            {
+                throw new JsonParsingException("invalid point json data");
+            }
+
+            return new DogMetricPoint() { Timestamp = timestamp, Value = value };
         }
 
         public void Serialize(ref JsonWriter writer, DogMetricPoint value, IJsonFormatterResolver formatterResolver)
         {
-            if (value == null)
-            {
-                writer.WriteNull();
-            }
-            else
-            {
-                writer.WriteBeginArray();
+            writer.WriteBeginArray();
 
-                UnixTimeMillisecondsDateTimeOffsetFormatter.Default.Serialize(ref writer, value.Timestamp, formatterResolver);
-                writer.WriteValueSeparator();
-                writer.WriteDouble(value.Value);
+            UnixTimeSecondsDateTimeOffsetFormatter.Default.Serialize(ref writer, value.Timestamp, formatterResolver);
+            writer.WriteValueSeparator();
+            writer.WriteDouble(value.Value);
 
-                writer.WriteEndArray();
-            }
+            writer.WriteEndArray();
         }
     }
 }
