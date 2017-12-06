@@ -32,8 +32,9 @@ namespace DogApiNet.JsonFormatters
             }
             else
             {
-                var keyFormatter = formatterResolver.GetFormatterWithVerify<TKey>() as IObjectPropertyNameFormatter<TKey>;
-                var valueFormatter = formatterResolver.GetFormatterWithVerify<TValue>();
+                var keyFormatter = this.keyFormatter as IObjectPropertyNameFormatter<TKey> ?? formatterResolver.GetFormatterWithVerify<TKey>() as IObjectPropertyNameFormatter<TKey>;
+                if (keyFormatter == null) throw new InvalidOperationException(typeof(TKey) + " does not support dictionary key deserialize.");
+                var valueFormatter = this.valueFormatter ?? formatterResolver.GetFormatterWithVerify<TValue>();
 
                 writer.WriteBeginObject();
 
