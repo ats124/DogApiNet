@@ -50,11 +50,11 @@ namespace DogApiNet.JsonFormatters
             BackingFields = new Dictionary<string, object>();
         }
 
-        protected void SetValue(object value, [CallerMemberName] string member = "")
+        protected void SetValue<T1>(T1 value, [CallerMemberName] string member = "")
             => BackingFields[member] = value;
 
-        protected object GetValue([CallerMemberName] string member = "")
-            => BackingFields[member];
+        protected T1 GetValue<T1>(T1 defaultValue = default(T1), [CallerMemberName] string member = "")
+            => BackingFields.TryGetValue(member, out var value) ? (T1)value : defaultValue;
 
         protected bool IsSet(string member)
             => BackingFields.ContainsKey(member);
