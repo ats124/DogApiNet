@@ -18,7 +18,36 @@ namespace DogApiNet
         Task<Monitor[]> GetMonitorListAsync(CancellationToken? cancelToken = null);
     }
 
-    public class Monitor
+    partial class DogApiClient : IMonitorApi
+    {
+        public IMonitorApi Monitor => this;
+
+        async Task<Monitor> IMonitorApi.GetMonitorAsync(int id, CancellationToken? cancelToken = null)
+            => await RequestAsync<Monitor>(HttpMethod.Get, $"/api/v1/monitor/{id}", null, null, cancelToken).ConfigureAwait(false);
+
+        async Task<Monitor[]> IMonitorApi.GetMonitorByNameAsync(string name, CancellationToken? cancelToken = null)
+        {
+            var @param = new NameValueCollection {
+                { "name", name}
+            };
+
+            return await RequestAsync<Monitor[]>(HttpMethod.Get, $"/api/v1/monitor", @param, null, cancelToken).ConfigureAwait(false);
+        }
+
+        async Task<Monitor[]> IMonitorApi.GetMonitorByTagsAsync(string[] tags, CancellationToken? cancelToken = null)
+        {
+            var @param = new NameValueCollection {
+                { "monitor_tags", string.Join(",", tags)}
+            };
+
+            return await RequestAsync<Monitor[]>(HttpMethod.Get, $"/api/v1/monitor", @param, null, cancelToken).ConfigureAwait(false);
+        }
+
+        async Task<Monitor[]> IMonitorApi.GetMonitorListAsync(CancellationToken? cancelToken)
+            => await RequestAsync<Monitor[]>(HttpMethod.Get, $"/api/v1/monitor", null, null, cancelToken).ConfigureAwait(false);
+    }
+
+    public struct Monitor
     {
         [DataMember(Name = "tags")]
         public string[] Tags { get; set; }
@@ -73,7 +102,7 @@ namespace DogApiNet
         public Options Options { get; set; }
     }
 
-    public class Options
+    public struct Options
     {
         [DataMember(Name = "no_data_timeframe")]
         public int? NoDataTimeframe { get; set; }
@@ -115,7 +144,7 @@ namespace DogApiNet
         public bool Locked { get; set; }
     }
 
-    public class Creator
+    public struct Creator
     {
         [DataMember(Name = "email")]
         public string Email { get; set; }
@@ -130,7 +159,7 @@ namespace DogApiNet
         public string Name { get; set; }
     }
 
-    public class ThresholdCount
+    public struct ThresholdCount
     {
         [DataMember(Name = "ok")]
         public int Ok { get; set; }
@@ -144,38 +173,5 @@ namespace DogApiNet
         public int CriticalRecovery { get; set; }
         [DataMember(Name = "warning_recovery")]
         public int WarningRecovery { get; set; }
-    }
-
-    partial class DogApiClient : IMonitorApi
-    {
-        public IMonitorApi Monitor => this;
-
-        async Task<Monitor> IMonitorApi.GetMonitorAsync(int id, CancellationToken? cancelToken = null)
-        {
-            return await RequestAsync<Monitor>(HttpMethod.Get, $"/api/v1/monitor/{id}", null, null, cancelToken).ConfigureAwait(false);
-        }
-
-        async Task<Monitor[]> IMonitorApi.GetMonitorByNameAsync(string name, CancellationToken? cancelToken = null)
-        {
-            var @param = new NameValueCollection {
-                { "name", name}
-            };
-
-            return await RequestAsync<Monitor[]>(HttpMethod.Get, $"/api/v1/monitor", @param, null, cancelToken).ConfigureAwait(false);
-        }
-
-        async Task<Monitor[]> IMonitorApi.GetMonitorByTagsAsync(string[] tags, CancellationToken? cancelToken = null)
-        {
-            var @param = new NameValueCollection {
-                { "monitor_tags", string.Join(",", tags)}
-            };
-
-            return await RequestAsync<Monitor[]>(HttpMethod.Get, $"/api/v1/monitor", @param, null, cancelToken).ConfigureAwait(false);
-        }
-
-        async Task<Monitor[]> IMonitorApi.GetMonitorListAsync(CancellationToken? cancelToken)
-        {
-            return await RequestAsync<Monitor[]>(HttpMethod.Get, $"/api/v1/monitor", null, null, cancelToken).ConfigureAwait(false);
-        }
     }
 }
