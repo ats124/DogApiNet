@@ -45,7 +45,7 @@ namespace DogApiNet.JsonFormatters
 
             var stringFormatter = formatterResolver.GetFormatterWithVerify<string>();
             var keyFormatter = (IObjectPropertyNameFormatter<string>)stringFormatter;
-            keyFormatter.SerializeToPropertyName(ref writer, value.ToString(), formatterResolver);
+            keyFormatter.SerializeToPropertyName(ref writer, value.MonitorId.ToString(), formatterResolver);
             writer.WriteNameSeparator();
             stringFormatter.Serialize(ref writer, value.Group, formatterResolver);
 
