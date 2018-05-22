@@ -38,7 +38,7 @@ namespace DogApiNet
 
         private async Task<T> RequestAsync<T>(HttpMethod method, string path, NameValueCollection @params, DogApiHttpRequestContent data, CancellationToken? cancelToken)
         {
-            @params = @params == null 
+            @params = @params == null
                 ? new NameValueCollection()
                 : new NameValueCollection(@params);
             @params.Add("api_key", ApiKey);
