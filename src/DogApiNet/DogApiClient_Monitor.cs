@@ -26,7 +26,7 @@ namespace DogApiNet
 
         Task<DogMonitorDeleteResult> DeleteAsync(long id, CancellationToken? cancelToken = null);
 
-        Task<DogMonitorResolveResult> ResolveAsync(DogMonitorResolve[] resolves, CancellationToken? cancelToken = null);
+        Task<DogMonitorResolveResult[]> ResolveAsync(DogMonitorResolve[] resolves, CancellationToken? cancelToken = null);
     }
 
     public static class DogMonitorTypes
@@ -335,10 +335,10 @@ namespace DogApiNet
             return await RequestAsync<DogMonitorGetResult[]>(HttpMethod.Get, "/api/v1/monitor", @params, null, cancelToken).ConfigureAwait(false);
         }
 
-        async Task<DogMonitorResolveResult> IMonitorApi.ResolveAsync(DogMonitorResolve[] resolves, CancellationToken? cancelToken)
+        async Task<DogMonitorResolveResult[]> IMonitorApi.ResolveAsync(DogMonitorResolve[] resolves, CancellationToken? cancelToken)
         {
             var data = new DogApiHttpRequestContent("application/json", JsonSerializer.Serialize(new { resolve = resolves }));
-            return await RequestAsync<DogMonitorResolveResult>(HttpMethod.Post, $"/monitor/bulk_resolve", null, data, cancelToken).ConfigureAwait(false);
+            return await RequestAsync<DogMonitorResolveResult[]>(HttpMethod.Post, $"/monitor/bulk_resolve", null, data, cancelToken).ConfigureAwait(false);
         }
 
     }
