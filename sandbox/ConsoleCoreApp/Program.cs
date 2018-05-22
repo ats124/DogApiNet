@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Utf8Json;
 using DogApiNet;
-using DogApiNet.Json;
 using DogApiNet.JsonFormatters;
 using System.Threading.Tasks;
 
@@ -17,15 +17,56 @@ namespace ConsoleCoreApp
 
             using (var client = new DogApiClient(apiKey, appKey))
             {
-                var postResult = client.Metric.PostAsync(new[]
+                var monitor = client.Monitor.CreateAsync(new DogMonitorCreateParameter(DogMonitorTypes.MericAlert, "max(last_1m):avg:test.random{*} > 90")
                 {
-                    new DogMetric("test.metric", 500),
-                    new DogMetric("test.metric2", 300)
+                    Name = "metric alert testtest",
+                    Message = "test alert message",
+                    Options = new DogMonitorOptions()
+                    {
+                        NotifyNoData = true,
+                        Locked = true,
+                        NewHostDelay = 180,
+                        RenotifyInterval = 30,
+                        NoDataTimeframe = 3,
+                        EscalationMessage = "hogehoge",
+                        RequireFullWindow = false,
+                        EvaluationDelay = 5,
+                        Thresholds = new Dictionary<string, double>()
+                        {
+                            { "critical", 90 },
+                            { "warning", 50 },
+                            { "critical_recovery", 70 },
+                            { "warning_recovery", 30 },
+                        },
+                        Silenced = new Dictionary<string, DateTimeOffset?>()
+                        {
+                            { "*", DateTimeOffset.Now.AddHours(5) }
+                        }
+                    }
                 }).Result;
 
-                var to = DateTimeOffset.Now;
-                var from = to.AddMinutes(-30);
-                var queryResult = client.Metric.QueryAsync(from, to, "test.metric{*}").Result;
+                var editMonitor = client.Monitor.EditAsync(monitor.Id, new DogMonitorEditParameter("max(last_1m):avg:test.random{*} > 80")
+                {
+                    Options = new DogMonitorOptions()
+                    {
+                        Thresholds = new Dictionary<string, double>()
+                        {
+                            { "critical", 80 },
+                            { "warning", 40 },
+                            { "critical_recovery", 60 },
+                            { "warning_recovery", 20 },
+                        },
+                        Silenced = null,
+                    }
+                }).Result;
+
+                var getMonitor = client.Monitor.GetAsync(monitor.Id, groupStates: "all").Result;
+
+                var deleteMonitor = client.Monitor.DeleteAsync(monitor.Id).Result;
+
+                var getAllMonitors = client.Monitor.GetAllAsync(groupStates: "all").Result;
+
+                //var result = client.Monitor.ResolveAsync(new[] { new DogMonitorResolve(3505039, "*") }).Result;
             }
         }
     }
