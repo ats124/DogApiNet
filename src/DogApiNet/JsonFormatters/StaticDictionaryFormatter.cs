@@ -116,7 +116,7 @@ namespace DogApiNet.JsonFormatters
                 var i = 0;
                 while (!reader.ReadIsEndObjectWithSkipValueSeparator(ref i))
                 {
-                    var key = keyFormatter.DesrializeFromPropertyName(ref reader, formatterResolver);
+                    var key = keyFormatter.DeserializeFromPropertyName(ref reader, formatterResolver);
                     reader.ReadIsNameSeparatorWithVerify();
                     var value = valueFormatter.Deserialize(ref reader, formatterResolver);
                     dict.Add(key, value);
