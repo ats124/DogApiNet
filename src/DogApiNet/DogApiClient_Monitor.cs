@@ -204,7 +204,7 @@ namespace DogApiNet
         public string OverallState { get; set; }
 
         [DataMember(Name = "overall_state_modified")]
-        public DateTimeOffset? OverallModified { get; set; }
+        public DateTimeOffset? OverallStateModified { get; set; }
 
         [DataMember(Name = "query")]
         public string Query { get; set; }
