@@ -174,6 +174,8 @@ namespace ConsoleCoreApp
                 Debug.Assert(getMonitor.Options.Thresholds["warning_recovery"] == 20);
                 Debug.Assert(getMonitor.Options.Silenced["*"].Value.Normalize() == silenced2.Normalize());
 
+                var resolveResults = await client.Monitor.ResolveAsync(new [] { new DogMonitorResolve(getMonitor.Id, "ALL_GROUPS"), });
+
                 foreach (var m in getAllMonitors)
                 {
                     var deleteMonitor = await client.Monitor.DeleteAsync(m.Id);
