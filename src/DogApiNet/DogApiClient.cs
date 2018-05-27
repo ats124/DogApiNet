@@ -36,6 +36,10 @@ namespace DogApiNet
             this.leaveDispose = leaveDispose;
         }
 
+        private static class NoJsonResponse
+        {
+        }
+
         private async Task<T> RequestAsync<T>(HttpMethod method, string path, NameValueCollection @params, DogApiHttpRequestContent data, CancellationToken? cancelToken)
         {
             @params = @params == null 
@@ -64,20 +68,26 @@ namespace DogApiNet
                 throw new DogApiClientException("http request error", ex);
             }
 
-
             if ((int)content.StatusCode >= 200 && (int)content.StatusCode < 300)
             {
-                T result;
-                try
+                if (typeof(T) == typeof(NoJsonResponse))
                 {
-                    result = JsonSerializer.Deserialize<T>(content.Data);
+                    return default(T);
                 }
-                catch (Exception ex)
+                else
                 {
-                    throw new DogApiClientInvalidJsonException(content.Data, ex);
-                }
+                    T result;
+                    try
+                    {
+                        result = JsonSerializer.Deserialize<T>(content.Data);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new DogApiClientInvalidJsonException(content.Data, ex);
+                    }
 
-                return result;
+                    return result;                    
+                }
             }
             else
             {
