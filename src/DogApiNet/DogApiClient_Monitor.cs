@@ -27,6 +27,10 @@ namespace DogApiNet
         Task<DogMonitorDeleteResult> DeleteAsync(long id, CancellationToken? cancelToken = null);
 
         Task<DogMonitorResolveResult[]> ResolveAsync(DogMonitorResolve[] resolves, CancellationToken? cancelToken = null);
+
+        Task<DogMonitorUnmuteResult> UnmuteAsync(long id, string scope = null, bool? allScopes = null, CancellationToken? cancelToken = null);
+
+        Task<DogMonitorMuteResult> MuteAsync(long id, string scope = null, DateTimeOffset? end = null, CancellationToken? cancelToken = null);
     }
 
     public static class DogMonitorTypes
@@ -296,6 +300,14 @@ namespace DogApiNet
     {
     }
 
+    public class DogMonitorUnmuteResult : DogMonitorGetResult
+    {
+    }
+
+    public class DogMonitorMuteResult : DogMonitorGetResult
+    {
+    }
+
     partial class DogApiClient : IMonitorApi
     {
         public IMonitorApi Monitor => this;
@@ -339,6 +351,30 @@ namespace DogApiNet
         {
             var data = new DogApiHttpRequestContent("application/json", JsonSerializer.Serialize(new { resolve = resolves }));
             return await RequestAsync<DogMonitorResolveResult[]>(HttpMethod.Post, $"/monitor/bulk_resolve", null, data, cancelToken).ConfigureAwait(false);
+        }
+
+        async Task<DogMonitorUnmuteResult> IMonitorApi.UnmuteAsync(long id, string scope, bool? allScopes, CancellationToken? cancelToken)
+        {
+            var dataDic = new Dictionary<string, object>();
+            if (scope != null) dataDic["scope"] = scope;
+            if (allScopes.HasValue) dataDic["all-scopes"] = allScopes;
+
+            var data = dataDic.Count > 0
+                ? new DogApiHttpRequestContent("application/json", JsonSerializer.Serialize(dataDic))
+                : null;
+            return await RequestAsync<DogMonitorUnmuteResult>(HttpMethod.Post, $"/api/v1/monitor/{id}/unmute", null, data, cancelToken).ConfigureAwait(false);
+        }
+
+        async Task<DogMonitorMuteResult> IMonitorApi.MuteAsync(long id, string scope, DateTimeOffset? end, CancellationToken? cancelToken)
+        {
+            var dataDic = new Dictionary<string, object>();
+            if (scope != null) dataDic["scope"] = scope;
+            if (end.HasValue) dataDic["end"] = end.Value.ToUnixTimeSeconds();
+
+            var data = dataDic.Count > 0
+                ? new DogApiHttpRequestContent("application/json", JsonSerializer.Serialize(dataDic))
+                : null;
+            return await RequestAsync<DogMonitorMuteResult>(HttpMethod.Post, $"/api/v1/monitor/{id}/mute", null, data, cancelToken).ConfigureAwait(false);
         }
 
     }

@@ -174,6 +174,13 @@ namespace ConsoleCoreApp
                 Debug.Assert(getMonitor.Options.Thresholds["warning_recovery"] == 20);
                 Debug.Assert(getMonitor.Options.Silenced["*"].Value.Normalize() == silenced2.Normalize());
 
+                var unmute = await client.Monitor.UnmuteAsync(getMonitor.Id, "*", false);
+                Debug.Assert(unmute.Options.Silenced.Count == 0);
+
+                var muteend = DateTimeOffset.Now.AddHours(1);
+                var mute = await client.Monitor.MuteAsync(getMonitor.Id, "*", muteend);
+                Debug.Assert(mute.Options.Silenced["*"].Value.Normalize() == muteend.Normalize());
+
                 var resolveResults = await client.Monitor.ResolveAsync(new [] { new DogMonitorResolve(getMonitor.Id, "ALL_GROUPS"), });
 
                 foreach (var m in getAllMonitors)
