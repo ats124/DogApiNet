@@ -185,6 +185,8 @@ namespace ConsoleCoreApp
 
                 var muteAll = await client.Monitor.MuteAllAsync();
 
+                await client.Monitor.UnmuteAllAsync();
+
                 foreach (var m in getAllMonitors)
                 {
                     var deleteMonitor = await client.Monitor.DeleteAsync(m.Id);

@@ -33,6 +33,8 @@ namespace DogApiNet
         Task<DogMonitorMuteResult> MuteAsync(long id, string scope = null, DateTimeOffset? end = null, CancellationToken? cancelToken = null);
 
         Task<DogMonitorMuteAllResult> MuteAllAsync(CancellationToken? cancelToken = null);
+
+        Task UnmuteAllAsync(CancellationToken? cancelToken = null);
     }
 
     public static class DogMonitorTypes
@@ -409,6 +411,12 @@ namespace DogApiNet
         {
             var data = new DogApiHttpRequestContent("application/json", new byte[0]);
             return await RequestAsync<DogMonitorMuteAllResult>(HttpMethod.Post, $"/api/v1/monitor/mute_all", null, data, cancelToken).ConfigureAwait(false);
+        }
+
+        async Task IMonitorApi.UnmuteAllAsync(CancellationToken? cancelToken)
+        {
+            var data = new DogApiHttpRequestContent("application/json", new byte[0]);
+            await RequestAsync<NoJsonResponse>(HttpMethod.Post, $"/api/v1/monitor/unmute_all", null, data, cancelToken).ConfigureAwait(false);
         }
     }
 }
