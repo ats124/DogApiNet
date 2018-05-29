@@ -183,6 +183,8 @@ namespace ConsoleCoreApp
 
                 var resolveResults = await client.Monitor.ResolveAsync(new [] { new DogMonitorResolve(getMonitor.Id, "ALL_GROUPS"), });
 
+                var muteAll = await client.Monitor.MuteAllAsync();
+
                 foreach (var m in getAllMonitors)
                 {
                     var deleteMonitor = await client.Monitor.DeleteAsync(m.Id);
