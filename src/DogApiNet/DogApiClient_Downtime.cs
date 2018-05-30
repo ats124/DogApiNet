@@ -16,6 +16,7 @@ namespace DogApiNet
 
     public interface IDowntimeApi
     {
+        Task<DogDowntimeGetResult> GetAsync(long id, CancellationToken? cancelToken = null);
         Task<DogDowntimeGetResult[]> GetAllAsync(bool? currentOnly = null, CancellationToken? cancelToken = null);
     }
 
@@ -96,6 +97,11 @@ namespace DogApiNet
     partial class DogApiClient : IDowntimeApi
     {
         public IDowntimeApi Downtime => this;
+
+        async Task<DogDowntimeGetResult> IDowntimeApi.GetAsync(long id, CancellationToken? cancelToken)
+        {
+            return await RequestAsync<DogDowntimeGetResult>(HttpMethod.Get, $"/api/v1/downtime/{id}", null, null, cancelToken).ConfigureAwait(false);
+        }
 
         async Task<DogDowntimeGetResult[]> IDowntimeApi.GetAllAsync(bool? currentOnly, CancellationToken? cancelToken)
         {

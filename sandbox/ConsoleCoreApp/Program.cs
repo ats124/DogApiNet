@@ -19,8 +19,7 @@ namespace ConsoleCoreApp
 
             using (var client = new DogApiClient(apiKey, appKey))
             {
-                var allDowntime = await client.Downtime.GetAllAsync();
-                var a = allDowntime.FirstOrDefault(x => x.Recurrence != null);
+                var getDowntime = await client.Downtime.GetAsync(326670506);
             }
         }
 
