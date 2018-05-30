@@ -16,6 +16,7 @@ namespace DogApiNet
 
     public interface IDowntimeApi
     {
+        Task<DogDowntimeCreateResult> CreateAsync(DogDowntimeCreateParameter param, CancellationToken? cancelToken = null);
         Task<DogDowntimeCancelByScopeResult> CancelByScopeAsync(string[] scope, CancellationToken? cancelToken = null);
         Task DeleteAsync(long id, CancellationToken? cancelToken = null);
         Task<DogDowntimeGetResult> GetAsync(long id, CancellationToken? cancelToken = null);
@@ -28,6 +29,46 @@ namespace DogApiNet
         public static readonly string Weeks = "weeks";
         public static readonly string Months = "months";
         public static readonly string Years = "years";
+    }
+
+    [JsonFormatter(typeof(OptionalPropertySupportFormatter<DogDowntimeCreateParameter>))]
+    public class DogDowntimeCreateParameter : OptionalPropertySupport<DogDowntimeCreateParameter>
+    {
+        [DataMember(Name = "scope")]
+        public string[] Scope { get => GetValue<string[]>(); set => SetValue(value); }
+
+        [DataMember(Name = "monitor_id")]
+        public long? MonitorId { get => GetValue<long?>(); set => SetValue(value); }
+
+        [DataMember(Name = "start")]
+        [JsonFormatter(typeof(NullableUnixTimeSecondsDateTimeOffsetFormatter))]
+        public DateTimeOffset? Start { get => GetValue<DateTimeOffset?>(); set => SetValue(value); }
+
+        [DataMember(Name = "end")]
+        [JsonFormatter(typeof(NullableUnixTimeSecondsDateTimeOffsetFormatter))]
+        public DateTimeOffset? End  { get => GetValue<DateTimeOffset?>(); set => SetValue(value); }
+
+        [DataMember(Name = "message")]
+        public string Message { get => GetValue<string>(); set => SetValue(value); }
+
+        [DataMember(Name = "recurrence")]
+        public DogDowntimeRecurrence Recurrence { get => GetValue<DogDowntimeRecurrence>(); set => SetValue(value); }
+
+        [DataMember(Name = "timezone")]
+        public string TimeZone { get => GetValue<string>(); set => SetValue(value); }
+
+        public DogDowntimeCreateParameter()
+        {                
+        }
+
+        public DogDowntimeCreateParameter(params string[] scope)
+        {
+            Scope = scope;
+        }
+    }
+
+    public class DogDowntimeCreateResult : DogDowntimeGetResult
+    {
     }
 
     public class DogDowntimeCancelByScopeResult
@@ -55,6 +96,16 @@ namespace DogApiNet
 
         [DataMember(Name = "until_occurrences")]
         public int? UntilOccurrences { get => GetValue<int?>(); set => SetValue(value); }
+
+        public DogDowntimeRecurrence()
+        {            
+        }
+
+        public DogDowntimeRecurrence(string type, int period)
+        {
+            Type = type;
+            Period = period;
+        }
     }
 
     public class DogDowntimeGetResult
@@ -108,6 +159,12 @@ namespace DogApiNet
     partial class DogApiClient : IDowntimeApi
     {
         public IDowntimeApi Downtime => this;
+
+        async Task<DogDowntimeCreateResult> IDowntimeApi.CreateAsync(DogDowntimeCreateParameter param, CancellationToken? cancelToken)
+        {
+            var data = new DogApiHttpRequestContent("application/json", JsonSerializer.Serialize(param));
+            return await RequestAsync<DogDowntimeCreateResult>(HttpMethod.Post, $"/api/v1/downtime", null, data, cancelToken).ConfigureAwait(false);
+        }
 
         async Task IDowntimeApi.DeleteAsync(long id, CancellationToken? cancelToken)
         {

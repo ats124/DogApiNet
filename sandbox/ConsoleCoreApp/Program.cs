@@ -19,11 +19,27 @@ namespace ConsoleCoreApp
 
             using (var client = new DogApiClient(apiKey, appKey))
             {
-                var cancel = await client.Downtime.CancelByScopeAsync(new[] {"host:app2","host:app1"});
-                //foreach (var downtime in await client.Downtime.GetAllAsync())
-                //{
-                //    await client.Downtime.DeleteAsync(downtime.Id);
-                //}
+                var monitor = await client.Monitor.CreateAsync(new DogMonitorCreateParameter(DogMonitorTypes.MericAlert, "max(last_1m):avg:test.random{*} > 80"));
+
+                var start = DateTimeOffset.UtcNow.AddDays(1);
+                var param = new DogDowntimeCreateParameter("*")
+                {
+                    Start = start,
+                    End = start.AddDays(1),
+                    Message = "test message",
+                    MonitorId = monitor.Id,
+                    Recurrence = new DogDowntimeRecurrence(DogDowntimeRecurrenceTypes.Days, 1)
+                    {
+                        WeekDays = new [] { DayOfWeek.Monday, DayOfWeek.Saturday },
+                        //UntilDate = start.AddDays(10),
+                        UntilOccurrences = 5,
+                    },
+                    TimeZone = "UTC"
+                };
+                var downtime = await client.Downtime.CreateAsync(param);
+                await client.Downtime.DeleteAsync(downtime.Id);
+
+                await client.Monitor.DeleteAsync(monitor.Id);
             }
         }
 
