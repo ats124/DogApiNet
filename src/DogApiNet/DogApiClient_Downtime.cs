@@ -16,6 +16,7 @@ namespace DogApiNet
 
     public interface IDowntimeApi
     {
+        Task<DogDowntimeCancelByScopeResult> CancelByScopeAsync(string[] scope, CancellationToken? cancelToken = null);
         Task DeleteAsync(long id, CancellationToken? cancelToken = null);
         Task<DogDowntimeGetResult> GetAsync(long id, CancellationToken? cancelToken = null);
         Task<DogDowntimeGetResult[]> GetAllAsync(bool? currentOnly = null, CancellationToken? cancelToken = null);
@@ -27,6 +28,12 @@ namespace DogApiNet
         public static readonly string Weeks = "weeks";
         public static readonly string Months = "months";
         public static readonly string Years = "years";
+    }
+
+    public class DogDowntimeCancelByScopeResult
+    {
+        [DataMember(Name = "cancelled_ids")]
+        public long[] CancelledIds { get; set; }
     }
 
     [JsonFormatter(typeof(OptionalPropertySupportFormatter<DogDowntimeRecurrence>))]
@@ -106,6 +113,12 @@ namespace DogApiNet
         {
             var data = new DogApiHttpRequestContent("application/json", new byte[0]);
             await RequestAsync<NoJsonResponse>(HttpMethod.Delete, $"/api/v1/downtime/{id}", null, data, cancelToken).ConfigureAwait(false);
+        }
+
+        async Task<DogDowntimeCancelByScopeResult> IDowntimeApi.CancelByScopeAsync(string[] scope, CancellationToken? cancelToken)
+        {
+            var data = new DogApiHttpRequestContent("application/json", JsonSerializer.Serialize(new Dictionary<string, object>{ {"scope", scope} }));
+            return await RequestAsync<DogDowntimeCancelByScopeResult>(HttpMethod.Post, $"/api/v1/downtime/cancel/by_scope", null, data, cancelToken).ConfigureAwait(false);
         }
 
         async Task<DogDowntimeGetResult> IDowntimeApi.GetAsync(long id, CancellationToken? cancelToken)

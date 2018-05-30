@@ -19,10 +19,11 @@ namespace ConsoleCoreApp
 
             using (var client = new DogApiClient(apiKey, appKey))
             {
-                foreach (var downtime in await client.Downtime.GetAllAsync())
-                {
-                    await client.Downtime.DeleteAsync(downtime.Id);
-                }
+                var cancel = await client.Downtime.CancelByScopeAsync(new[] {"host:app2","host:app1"});
+                //foreach (var downtime in await client.Downtime.GetAllAsync())
+                //{
+                //    await client.Downtime.DeleteAsync(downtime.Id);
+                //}
             }
         }
 
