@@ -33,13 +33,23 @@ namespace DogApiNet.JsonFormatters
                 while (!reader.ReadIsEndObjectWithSkipValueSeparator(ref i))
                 {
                     var key = reader.ReadPropertyName();
-                    var propInfo = propInfos[key];
-                    var formatterType = typeof(IJsonFormatter<>).MakeGenericType(propInfo.PropertyType);
-                    var formatter = propInfo.Formatter ?? formatterResolver.GetFormatterDynamic(propInfo.PropertyType);
-                    args[0] = reader;
-                    var val = formatterType.InvokeMember("Deserialize", BindingFlags.InvokeMethod, Type.DefaultBinder, formatter, args);
-                    backingFields[propInfo.PropertyName] = val;
-                    reader = (JsonReader)args[0];
+                    if (propInfos.TryGetValue(key, out var propInfo))
+                    {
+                        var formatterType = typeof(IJsonFormatter<>).MakeGenericType(propInfo.PropertyType);
+                        var formatter = propInfo.Formatter ?? formatterResolver.GetFormatterDynamic(propInfo.PropertyType);
+                        args[0] = reader;
+                        var val = formatterType.InvokeMember("Deserialize", BindingFlags.InvokeMethod, Type.DefaultBinder, formatter, args);
+                        backingFields[propInfo.PropertyName] = val;
+                        reader = (JsonReader)args[0];
+                    }
+                    else
+                    {
+                        var formatterType = typeof(IJsonFormatter<>).MakeGenericType(typeof(object));
+                        var formatter = formatterResolver.GetFormatterDynamic(typeof(object));
+                        args[0] = reader;
+                        var val = formatterType.InvokeMember("Deserialize", BindingFlags.InvokeMethod, Type.DefaultBinder, formatter, args);
+                        reader = (JsonReader)args[0];
+                    }
                 }
 
                 return obj;
