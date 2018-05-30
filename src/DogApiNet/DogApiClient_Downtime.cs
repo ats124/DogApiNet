@@ -51,6 +51,9 @@ namespace DogApiNet
 
     public class DogDowntimeGetResult
     {
+        [DataMember(Name = "id")]
+        public long Id { get; set; }
+
         [DataMember(Name = "active")]
         public bool Active { get; set; }
 
