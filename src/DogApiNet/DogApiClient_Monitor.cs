@@ -66,10 +66,6 @@ namespace DogApiNet
         [DataMember(Name = "options")]
         public DogMonitorOptions Options { get => GetValue<DogMonitorOptions>(); set => SetValue(value); }
 
-        public DogMonitorCreateParameter()
-        {
-        }
-
         public DogMonitorCreateParameter(string type, string query)
         {
             Type = type;
@@ -94,10 +90,6 @@ namespace DogApiNet
 
         [DataMember(Name = "options")]
         public DogMonitorOptions Options { get => GetValue<DogMonitorOptions>(); set => SetValue(value); }
-
-        public DogMonitorUpdateParameter()
-        {
-        }
 
         public DogMonitorUpdateParameter(string query)
         {
