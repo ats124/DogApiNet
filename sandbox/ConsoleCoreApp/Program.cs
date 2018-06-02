@@ -98,8 +98,8 @@ namespace ConsoleCoreApp
 
                 var tags2 = new[] { "testtag3" };
                 var silenced2 = DateTimeOffset.Now.AddHours(6);
-                var editMonitor = await client.Monitor.EditAsync(monitor.Id,
-                    new DogMonitorEditParameter("max(last_1m):avg:test.random{*} > 80")
+                var editMonitor = await client.Monitor.UpdateAsync(monitor.Id,
+                    new DogMonitorUpdateParameter("max(last_1m):avg:test.random{*} > 80")
                     {
                         Name = "metric alert edited",
                         Message = "test alert message edited",
