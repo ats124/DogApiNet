@@ -8,7 +8,7 @@ using Utf8Json.Formatters;
 namespace DogApiNet.JsonFormatters
 {
     public sealed class OptionalPropertySupportFormatter<T> : IJsonFormatter<T> 
-        where T : OptionalPropertySupport<T>, new()
+        where T : OptionalPropertySupport<T>
     {
         public OptionalPropertySupportFormatter()
         {
@@ -24,7 +24,7 @@ namespace DogApiNet.JsonFormatters
             {
                 reader.ReadIsBeginObjectWithVerify();
 
-                var obj = new T();
+                var obj = (T)Activator.CreateInstance(typeof(T), true);
                 var propInfos = obj.OptionalPropertyInfosByJsonPropertyName;
                 var backingFields = obj.BackingFields;
                 var i = 0;
