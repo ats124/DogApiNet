@@ -18,7 +18,7 @@ namespace DogApiNet
     {
         Task<DogMonitorCreateResult> CreateAsync(DogMonitorCreateParameter param, CancellationToken? cancelToken = null);
 
-        Task<DogMonitorCreateResult> EditAsync(long id, DogMonitorEditParameter param, CancellationToken? cancelToken = null);
+        Task<DogMonitorCreateResult> UpdateAsync(long id, DogMonitorUpdateParameter param, CancellationToken? cancelToken = null);
 
         Task<DogMonitorGetResult> GetAsync(long id, string groupStates = null, CancellationToken? cancelToken = null);
 
@@ -77,8 +77,8 @@ namespace DogApiNet
         }
     }
 
-    [JsonFormatter(typeof(OptionalPropertySupportFormatter<DogMonitorEditParameter>))]
-    public class DogMonitorEditParameter : OptionalPropertySupport<DogMonitorEditParameter>
+    [JsonFormatter(typeof(OptionalPropertySupportFormatter<DogMonitorUpdateParameter>))]
+    public class DogMonitorUpdateParameter : OptionalPropertySupport<DogMonitorUpdateParameter>
     {
         [DataMember(Name = "query")]
         public string Query { get => GetValue<string>(); set => SetValue(value); }
@@ -95,11 +95,11 @@ namespace DogApiNet
         [DataMember(Name = "options")]
         public DogMonitorOptions Options { get => GetValue<DogMonitorOptions>(); set => SetValue(value); }
 
-        public DogMonitorEditParameter()
+        public DogMonitorUpdateParameter()
         {
         }
 
-        public DogMonitorEditParameter(string query)
+        public DogMonitorUpdateParameter(string query)
         {
             Query = query;
         }
@@ -348,7 +348,7 @@ namespace DogApiNet
             return await RequestAsync<DogMonitorCreateResult>(HttpMethod.Post, "/api/v1/monitor", null, data, cancelToken).ConfigureAwait(false);
         }
 
-        async Task<DogMonitorCreateResult> IMonitorApi.EditAsync(long id, DogMonitorEditParameter param, CancellationToken? cancelToken)
+        async Task<DogMonitorCreateResult> IMonitorApi.UpdateAsync(long id, DogMonitorUpdateParameter param, CancellationToken? cancelToken)
         {
             var data = new DogApiHttpRequestContent("application/json", JsonSerializer.Serialize(param));
             return await RequestAsync<DogMonitorCreateResult>(HttpMethod.Put, $"/api/v1/monitor/{id}", null, data, cancelToken).ConfigureAwait(false);
