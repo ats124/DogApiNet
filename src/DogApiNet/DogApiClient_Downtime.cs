@@ -61,10 +61,6 @@ namespace DogApiNet
     [JsonFormatter(typeof(OptionalPropertySupportFormatter<DogDowntimeCreateParameter>))]
     public class DogDowntimeCreateParameter : DogDowntimeCreateUpateParameterBase<DogDowntimeCreateParameter>
     {
-        public DogDowntimeCreateParameter()
-        {                
-        }
-
         public DogDowntimeCreateParameter(params string[] scope)
         {
             Scope = scope;
@@ -76,10 +72,6 @@ namespace DogApiNet
     {
         [DataMember(Name = "id")]
         public long Id { get => GetValue<long>(); set => SetValue(value); }
-
-        public DogDowntimeUpdateParameter()
-        {                
-        }
 
         public DogDowntimeUpdateParameter(long id, params string[] scope)
         {
@@ -118,8 +110,8 @@ namespace DogApiNet
         [DataMember(Name = "until_occurrences")]
         public int? UntilOccurrences { get => GetValue<int?>(); set => SetValue(value); }
 
-        public DogDowntimeRecurrence()
-        {            
+        internal DogDowntimeRecurrence()
+        {
         }
 
         public DogDowntimeRecurrence(string type, int period)
