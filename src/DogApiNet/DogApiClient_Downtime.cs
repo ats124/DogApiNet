@@ -17,6 +17,7 @@ namespace DogApiNet
     public interface IDowntimeApi
     {
         Task<DogDowntimeCreateResult> CreateAsync(DogDowntimeCreateParameter param, CancellationToken? cancelToken = null);
+        Task<DogDowntimeCreateResult> UpdateAsync(DogDowntimeUpdateParameter param, CancellationToken? cancelToken = null);
         Task<DogDowntimeCancelByScopeResult> CancelByScopeAsync(string[] scope, CancellationToken? cancelToken = null);
         Task DeleteAsync(long id, CancellationToken? cancelToken = null);
         Task<DogDowntimeGetResult> GetAsync(long id, CancellationToken? cancelToken = null);
@@ -31,8 +32,7 @@ namespace DogApiNet
         public static readonly string Years = "years";
     }
 
-    [JsonFormatter(typeof(OptionalPropertySupportFormatter<DogDowntimeCreateParameter>))]
-    public class DogDowntimeCreateParameter : OptionalPropertySupport<DogDowntimeCreateParameter>
+    public abstract class DogDowntimeCreateUpateParameterBase<T> : OptionalPropertySupport<T> where T : OptionalPropertySupport<T>
     {
         [DataMember(Name = "scope")]
         public string[] Scope { get => GetValue<string[]>(); set => SetValue(value); }
@@ -56,13 +56,34 @@ namespace DogApiNet
 
         [DataMember(Name = "timezone")]
         public string TimeZone { get => GetValue<string>(); set => SetValue(value); }
+    }
 
+    [JsonFormatter(typeof(OptionalPropertySupportFormatter<DogDowntimeCreateParameter>))]
+    public class DogDowntimeCreateParameter : DogDowntimeCreateUpateParameterBase<DogDowntimeCreateParameter>
+    {
         public DogDowntimeCreateParameter()
         {                
         }
 
         public DogDowntimeCreateParameter(params string[] scope)
         {
+            Scope = scope;
+        }
+    }
+
+    [JsonFormatter(typeof(OptionalPropertySupportFormatter<DogDowntimeUpdateParameter>))]
+    public class DogDowntimeUpdateParameter : DogDowntimeCreateUpateParameterBase<DogDowntimeUpdateParameter>
+    {
+        [DataMember(Name = "id")]
+        public long Id { get => GetValue<long>(); set => SetValue(value); }
+
+        public DogDowntimeUpdateParameter()
+        {                
+        }
+
+        public DogDowntimeUpdateParameter(long id, params string[] scope)
+        {
+            Id = id;
             Scope = scope;
         }
     }
@@ -161,6 +182,12 @@ namespace DogApiNet
         public IDowntimeApi Downtime => this;
 
         async Task<DogDowntimeCreateResult> IDowntimeApi.CreateAsync(DogDowntimeCreateParameter param, CancellationToken? cancelToken)
+        {
+            var data = new DogApiHttpRequestContent("application/json", JsonSerializer.Serialize(param));
+            return await RequestAsync<DogDowntimeCreateResult>(HttpMethod.Post, $"/api/v1/downtime", null, data, cancelToken).ConfigureAwait(false);
+        }
+
+        async Task<DogDowntimeCreateResult> IDowntimeApi.UpdateAsync(DogDowntimeUpdateParameter param, CancellationToken? cancelToken)
         {
             var data = new DogApiHttpRequestContent("application/json", JsonSerializer.Serialize(param));
             return await RequestAsync<DogDowntimeCreateResult>(HttpMethod.Post, $"/api/v1/downtime", null, data, cancelToken).ConfigureAwait(false);
