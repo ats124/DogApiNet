@@ -36,7 +36,7 @@ namespace DogApiNet
             this.leaveDispose = leaveDispose;
         }
 
-        private static class NoJsonResponse
+        private class NoJsonResponse
         {
         }
 

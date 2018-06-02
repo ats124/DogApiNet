@@ -18,7 +18,7 @@ namespace DogApiNet
     {
         Task<DogMonitorCreateResult> CreateAsync(DogMonitorCreateParameter param, CancellationToken? cancelToken = null);
 
-        Task<DogMonitorCreateResult> EditAsync(long id, DogMonitorEditParameter param, CancellationToken? cancelToken = null);
+        Task<DogMonitorCreateResult> UpdateAsync(long id, DogMonitorUpdateParameter param, CancellationToken? cancelToken = null);
 
         Task<DogMonitorGetResult> GetAsync(long id, string groupStates = null, CancellationToken? cancelToken = null);
 
@@ -31,6 +31,10 @@ namespace DogApiNet
         Task<DogMonitorUnmuteResult> UnmuteAsync(long id, string scope = null, bool? allScopes = null, CancellationToken? cancelToken = null);
 
         Task<DogMonitorMuteResult> MuteAsync(long id, string scope = null, DateTimeOffset? end = null, CancellationToken? cancelToken = null);
+
+        Task<DogMonitorMuteAllResult> MuteAllAsync(CancellationToken? cancelToken = null);
+
+        Task UnmuteAllAsync(CancellationToken? cancelToken = null);
     }
 
     public static class DogMonitorTypes
@@ -73,8 +77,8 @@ namespace DogApiNet
         }
     }
 
-    [JsonFormatter(typeof(OptionalPropertySupportFormatter<DogMonitorEditParameter>))]
-    public class DogMonitorEditParameter : OptionalPropertySupport<DogMonitorEditParameter>
+    [JsonFormatter(typeof(OptionalPropertySupportFormatter<DogMonitorUpdateParameter>))]
+    public class DogMonitorUpdateParameter : OptionalPropertySupport<DogMonitorUpdateParameter>
     {
         [DataMember(Name = "query")]
         public string Query { get => GetValue<string>(); set => SetValue(value); }
@@ -91,11 +95,11 @@ namespace DogApiNet
         [DataMember(Name = "options")]
         public DogMonitorOptions Options { get => GetValue<DogMonitorOptions>(); set => SetValue(value); }
 
-        public DogMonitorEditParameter()
+        public DogMonitorUpdateParameter()
         {
         }
 
-        public DogMonitorEditParameter(string query)
+        public DogMonitorUpdateParameter(string query)
         {
             Query = query;
         }
@@ -308,6 +312,32 @@ namespace DogApiNet
     {
     }
 
+    public class DogMonitorMuteAllResult
+    {
+        [DataMember(Name = "active")]
+        public bool Active { get; set; }
+
+        [DataMember(Name = "disable")]
+        public bool Disabled { get; set; }
+
+        [DataMember(Name = "message")]
+        public string Message { get; set; }
+
+        [DataMember(Name = "id")]
+        public long Id { get; set; }
+
+        [DataMember(Name = "start")]
+        [JsonFormatter(typeof(NullableUnixTimeSecondsDateTimeOffsetFormatter))]
+        public DateTimeOffset? Start { get; set; }
+
+        [DataMember(Name = "end")]
+        [JsonFormatter(typeof(NullableUnixTimeSecondsDateTimeOffsetFormatter))]
+        public DateTimeOffset? End { get; set; }
+
+        [DataMember(Name = "scope")]
+        public string[] Scope { get; set; }
+    }
+
     partial class DogApiClient : IMonitorApi
     {
         public IMonitorApi Monitor => this;
@@ -318,7 +348,7 @@ namespace DogApiNet
             return await RequestAsync<DogMonitorCreateResult>(HttpMethod.Post, "/api/v1/monitor", null, data, cancelToken).ConfigureAwait(false);
         }
 
-        async Task<DogMonitorCreateResult> IMonitorApi.EditAsync(long id, DogMonitorEditParameter param, CancellationToken? cancelToken)
+        async Task<DogMonitorCreateResult> IMonitorApi.UpdateAsync(long id, DogMonitorUpdateParameter param, CancellationToken? cancelToken)
         {
             var data = new DogApiHttpRequestContent("application/json", JsonSerializer.Serialize(param));
             return await RequestAsync<DogMonitorCreateResult>(HttpMethod.Put, $"/api/v1/monitor/{id}", null, data, cancelToken).ConfigureAwait(false);
@@ -377,5 +407,16 @@ namespace DogApiNet
             return await RequestAsync<DogMonitorMuteResult>(HttpMethod.Post, $"/api/v1/monitor/{id}/mute", null, data, cancelToken).ConfigureAwait(false);
         }
 
+        async Task<DogMonitorMuteAllResult> IMonitorApi.MuteAllAsync(CancellationToken? cancelToken)
+        {
+            var data = new DogApiHttpRequestContent("application/json", new byte[0]);
+            return await RequestAsync<DogMonitorMuteAllResult>(HttpMethod.Post, $"/api/v1/monitor/mute_all", null, data, cancelToken).ConfigureAwait(false);
+        }
+
+        async Task IMonitorApi.UnmuteAllAsync(CancellationToken? cancelToken)
+        {
+            var data = new DogApiHttpRequestContent("application/json", new byte[0]);
+            await RequestAsync<NoJsonResponse>(HttpMethod.Post, $"/api/v1/monitor/unmute_all", null, data, cancelToken).ConfigureAwait(false);
+        }
     }
 }
