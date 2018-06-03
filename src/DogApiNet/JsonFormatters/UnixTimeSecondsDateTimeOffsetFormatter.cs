@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
 using Utf8Json;
 
 namespace DogApiNet.JsonFormatters
@@ -10,10 +7,8 @@ namespace DogApiNet.JsonFormatters
     {
         public static readonly IJsonFormatter<DateTimeOffset> Default = new UnixTimeSecondsDateTimeOffsetFormatter();
 
-        public DateTimeOffset Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
-        {
-            return DogApiUtil.UnixTimeSecondsToDateTimeOffset(reader.ReadInt64());
-        }
+        public DateTimeOffset Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver) =>
+            DogApiUtil.UnixTimeSecondsToDateTimeOffset(reader.ReadInt64());
 
         public void Serialize(ref JsonWriter writer, DateTimeOffset value, IJsonFormatterResolver formatterResolver)
         {
@@ -23,30 +18,22 @@ namespace DogApiNet.JsonFormatters
 
     public sealed class NullableUnixTimeSecondsDateTimeOffsetFormatter : IJsonFormatter<DateTimeOffset?>
     {
-        public static readonly IJsonFormatter<DateTimeOffset?> Default = new NullableUnixTimeSecondsDateTimeOffsetFormatter();
+        public static readonly IJsonFormatter<DateTimeOffset?> Default =
+            new NullableUnixTimeSecondsDateTimeOffsetFormatter();
 
         public DateTimeOffset? Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
         {
             if (reader.ReadIsNull())
-            {
                 return null;
-            }
-            else
-            {
-                return DogApiUtil.UnixTimeSecondsToDateTimeOffset(reader.ReadInt64());
-            }
+            return DogApiUtil.UnixTimeSecondsToDateTimeOffset(reader.ReadInt64());
         }
 
         public void Serialize(ref JsonWriter writer, DateTimeOffset? value, IJsonFormatterResolver formatterResolver)
         {
             if (value == null)
-            {
                 writer.WriteNull();
-            }
             else
-            {
                 writer.WriteInt64(value.Value.ToUnixTimeSeconds());
-            }
         }
     }
 }

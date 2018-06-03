@@ -241,9 +241,8 @@ namespace DogApiNet
 
         async Task IDowntimeApi.DeleteAsync(long id, CancellationToken? cancelToken)
         {
-            var data = new DogApiHttpRequestContent("application/json", new byte[0]);
-            await RequestAsync<NoJsonResponse>(HttpMethod.Delete, $"/api/v1/downtime/{id}", null, data, cancelToken)
-                .ConfigureAwait(false);
+            await RequestAsync<NoJsonResponse>(HttpMethod.Delete, $"/api/v1/downtime/{id}", null,
+                DogApiHttpRequestContent.EmptyJson, cancelToken).ConfigureAwait(false);
         }
 
         async Task<DogDowntimeCancelByScopeResult> IDowntimeApi.CancelByScopeAsync(string[] scope,

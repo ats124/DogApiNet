@@ -64,20 +64,12 @@ namespace DogApiNet.JsonFormatters
             BackingFields[member] = value;
         }
 
-        protected T1 GetValue<T1>(T1 defaultValue = default(T1), [CallerMemberName] string member = "")
-        {
-            return BackingFields.TryGetValue(member, out var value) ? (T1)value : defaultValue;
-        }
+        protected T1 GetValue<T1>(T1 defaultValue = default(T1), [CallerMemberName] string member = "") =>
+            BackingFields.TryGetValue(member, out var value) ? (T1)value : defaultValue;
 
-        protected bool IsSet(string member)
-        {
-            return BackingFields.ContainsKey(member);
-        }
+        protected bool IsSet(string member) => BackingFields.ContainsKey(member);
 
-        protected bool Unset(string member)
-        {
-            return BackingFields.Remove(member);
-        }
+        protected bool Unset(string member) => BackingFields.Remove(member);
 
         public bool IsSet<TValue>(Expression<Func<T, TValue>> member)
         {

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using Utf8Json;
 using Utf8Json.Formatters;
 
@@ -24,7 +22,7 @@ namespace DogApiNet.JsonFormatters
                 {DayOfWeek.Wednesday, "Wed"},
                 {DayOfWeek.Thursday, "Thu"},
                 {DayOfWeek.Friday, "Fri"},
-                {DayOfWeek.Saturday, "Sat"},
+                {DayOfWeek.Saturday, "Sat"}
             };
             NameValueMappings = ValueNameMappings.ToDictionary(x => x.Value, x => x.Key);
         }

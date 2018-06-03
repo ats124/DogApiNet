@@ -1,32 +1,33 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Specialized;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DogApiNet
 {
     public abstract class DogApiHttpClient : IDisposable
     {
-        public abstract Task<DogApiHttpResponseContent> RequestAsync(HttpMethod method, string url, NameValueCollection headers, NameValueCollection @params, DogApiHttpRequestContent data, TimeSpan timeOut);
+        public abstract Task<DogApiHttpResponseContent> RequestAsync(HttpMethod method, string url,
+            NameValueCollection headers, NameValueCollection @params, DogApiHttpRequestContent data, TimeSpan timeOut);
 
-        public abstract Task<DogApiHttpResponseContent> RequestAsync(HttpMethod method, string url, NameValueCollection headers, NameValueCollection @params, DogApiHttpRequestContent data, CancellationToken cancelToken);
+        public abstract Task<DogApiHttpResponseContent> RequestAsync(HttpMethod method, string url,
+            NameValueCollection headers, NameValueCollection @params, DogApiHttpRequestContent data,
+            CancellationToken cancelToken);
 
         #region IDisposable Support
-        private bool disposedValue = false; // 重複する呼び出しを検出するには
+
+        private bool _disposedValue; // 重複する呼び出しを検出するには
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (_disposedValue) return;
+            if (disposing)
             {
-                if (disposing)
-                {
-                }
-
-                disposedValue = true;
             }
+
+            _disposedValue = true;
         }
 
         ~DogApiHttpClient()
@@ -40,6 +41,7 @@ namespace DogApiNet
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
         #endregion
     }
 
@@ -52,15 +54,16 @@ namespace DogApiNet
 
     public class DogApiHttpRequestContent
     {
-        public string ContentType { get; }
-        public byte[] Data { get; }
-
         public DogApiHttpRequestContent(string contentType, byte[] content)
         {
-            if (contentType == null) throw new ArgumentNullException(nameof(contentType));
-            if (content == null) throw new ArgumentNullException(nameof(content));
-            ContentType = contentType;
-            Data = content;
+            ContentType = contentType ?? throw new ArgumentNullException(nameof(contentType));
+            Data = content ?? throw new ArgumentNullException(nameof(content));
         }
+
+        public static DogApiHttpRequestContent EmptyJson { get; } =
+            new DogApiHttpRequestContent("application/json", new byte[0]);
+
+        public string ContentType { get; }
+        public byte[] Data { get; }
     }
 }

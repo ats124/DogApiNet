@@ -1,26 +1,29 @@
 ﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Net.Http;
 using System.Runtime.Serialization;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DogApiNet.JsonFormatters;
 using Utf8Json;
-using Utf8Json.Formatters;
+using Utf8Json.Resolvers;
 
 namespace DogApiNet
 {
-    using JsonFormatters;
-
     public interface IServiceCheckApi
     {
-        Task<DogServiceCheckPostResult> PostAsync(DogServiceCheckPostParameter param, CancellationToken? cancelToken = null);
+        Task<DogServiceCheckPostResult> PostAsync(DogServiceCheckPostParameter param,
+            CancellationToken? cancelToken = null);
     }
 
     public class DogServiceCheckPostParameter
     {
+        public DogServiceCheckPostParameter(string check, string hostName, int status)
+        {
+            Check = check;
+            HostName = hostName;
+            Status = status;
+        }
+
         [DataMember(Name = "check")]
         public string Check { get; set; }
 
@@ -39,13 +42,6 @@ namespace DogApiNet
 
         [DataMember(Name = "tags")]
         public string[] Tags { get; set; }
-
-        public DogServiceCheckPostParameter(string check, string hostName, int status)
-        {
-            Check = check;
-            HostName = hostName;
-            Status = status;
-        }
     }
 
     public class DogServiceCheckPostResult
@@ -58,11 +54,13 @@ namespace DogApiNet
     {
         public IServiceCheckApi ServiceCheck => this;
 
-        async Task<DogServiceCheckPostResult> IServiceCheckApi.PostAsync(DogServiceCheckPostParameter param, CancellationToken? cancelToken)
+        async Task<DogServiceCheckPostResult> IServiceCheckApi.PostAsync(DogServiceCheckPostParameter param,
+            CancellationToken? cancelToken)
         {
-            var data = new DogApiHttpRequestContent("application/json", JsonSerializer.Serialize(param, Utf8Json.Resolvers.StandardResolver.ExcludeNull));
-            return await RequestAsync<DogServiceCheckPostResult>(HttpMethod.Post, "/api/v1/check_run", null, data, cancelToken).ConfigureAwait(false);
+            var data = new DogApiHttpRequestContent("application/json",
+                JsonSerializer.Serialize(param, StandardResolver.ExcludeNull));
+            return await RequestAsync<DogServiceCheckPostResult>(HttpMethod.Post, "/api/v1/check_run", null, data,
+                cancelToken).ConfigureAwait(false);
         }
-
     }
 }
