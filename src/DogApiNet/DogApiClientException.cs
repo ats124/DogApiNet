@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Net;
 using System.Runtime.Serialization;
 using System.Text;
 
@@ -8,34 +8,50 @@ namespace DogApiNet
     [Serializable]
     public class DogApiClientException : Exception
     {
-        public DogApiClientException() { }
-        public DogApiClientException(string message) : base(message) { }
-        public DogApiClientException(string message, Exception inner) : base(message, inner) { }
+        public DogApiClientException()
+        {
+        }
+
+        public DogApiClientException(string message) : base(message)
+        {
+        }
+
+        public DogApiClientException(string message, Exception inner) : base(message, inner)
+        {
+        }
+
         protected DogApiClientException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
+        }
     }
 
     [Serializable]
     public class DogApiClientHttpException : DogApiClientException
     {
-        public System.Net.HttpStatusCode? HttpStatusCode { get; private set; }
-
-        public DogApiClientHttpException() { }
-
-        public DogApiClientHttpException(System.Net.HttpStatusCode httpStatusCode) : base($"invalid http status code returned. code:{httpStatusCode:D}")
+        public DogApiClientHttpException()
         {
-            this.HttpStatusCode = httpStatusCode;
         }
 
-        public DogApiClientHttpException(Exception inner) : base($"http error", inner) { }
+        public DogApiClientHttpException(HttpStatusCode httpStatusCode) : base(
+            $"invalid http status code returned. code:{httpStatusCode:D}")
+        {
+            HttpStatusCode = httpStatusCode;
+        }
+
+        public DogApiClientHttpException(Exception inner) : base($"http error", inner)
+        {
+        }
 
         protected DogApiClientHttpException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context) : base(info, context)
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
-            HttpStatusCode = (System.Net.HttpStatusCode)info.GetValue(nameof(HttpStatusCode), typeof(System.Net.HttpStatusCode?));
+            HttpStatusCode = (HttpStatusCode)info.GetValue(nameof(HttpStatusCode), typeof(HttpStatusCode?));
         }
+
+        public HttpStatusCode? HttpStatusCode { get; }
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
@@ -47,31 +63,35 @@ namespace DogApiNet
     [Serializable]
     public class DogApiClientTimeoutException : DogApiClientException
     {
-        public DogApiClientTimeoutException() : base("request timeout") { }
+        public DogApiClientTimeoutException() : base("request timeout")
+        {
+        }
 
         protected DogApiClientTimeoutException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
+        }
     }
 
     [Serializable]
     public class DogApiClientInvalidJsonException : DogApiClientException
     {
-        public byte[] JsonData { get; private set; }
-
-        public string JsonString => Encoding.UTF8.GetString(JsonData);
-
         public DogApiClientInvalidJsonException(byte[] data, Exception inner) : base("invalid json data", inner)
         {
             JsonData = data;
         }
 
         protected DogApiClientInvalidJsonException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context) : base(info, context)
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
             JsonData = (byte[])info.GetValue(nameof(JsonData), typeof(byte[]));
         }
+
+        public byte[] JsonData { get; }
+
+        public string JsonString => Encoding.UTF8.GetString(JsonData);
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {

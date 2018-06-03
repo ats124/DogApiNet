@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Utf8Json;
-using Utf8Json.Formatters;
+﻿using Utf8Json;
 
 namespace DogApiNet.JsonFormatters
 {
@@ -10,10 +6,7 @@ namespace DogApiNet.JsonFormatters
     {
         public DogMonitorResolve Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
         {
-            if (reader.ReadIsNull())
-            {
-                return null;
-            }
+            if (reader.ReadIsNull()) return null;
 
             reader.ReadIsBeginObjectWithVerify();
 
@@ -21,7 +14,7 @@ namespace DogApiNet.JsonFormatters
             var keyFormatter = (IObjectPropertyNameFormatter<string>)stringFormatter;
 
             long monitorId = 0;
-            string group = "";
+            var group = "";
             var i = 0;
             while (!reader.ReadIsEndObjectWithSkipValueSeparator(ref i))
             {

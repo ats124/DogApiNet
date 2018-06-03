@@ -87,7 +87,7 @@ namespace DogApiNet
         [DataMember(Name = "definition")]
         public dynamic Definition { get; set; }
 
-        public string GetDefinitionJsonString() => JsonSerializer.ToJsonString((object) Definition);
+        public string GetDefinitionJsonString() => JsonSerializer.ToJsonString((object)Definition);
 
         public void SetDefinitionJsonString(string json) => Definition = JsonSerializer.Deserialize<dynamic>(json);
     }

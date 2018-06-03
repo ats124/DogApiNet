@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using DogApiNet.JsonFormatters;
 using Utf8Json;
-using Utf8Json.Formatters;
 using Utf8Json.Resolvers;
 
 namespace DogApiNet

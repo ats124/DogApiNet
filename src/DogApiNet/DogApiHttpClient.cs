@@ -22,14 +22,12 @@ namespace DogApiNet
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!_disposedValue)
+            if (_disposedValue) return;
+            if (disposing)
             {
-                if (disposing)
-                {
-                }
-
-                _disposedValue = true;
             }
+
+            _disposedValue = true;
         }
 
         ~DogApiHttpClient()

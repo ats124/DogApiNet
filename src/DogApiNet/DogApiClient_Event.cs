@@ -25,9 +25,11 @@ namespace DogApiNet
 
     public class DogEvent
     {
-        [IgnoreDataMember] private string[] _tags;
+        [IgnoreDataMember]
+        private string[] _tags;
 
-        [IgnoreDataMember] private Lazy<ILookup<string, string>> _tagsAsDictionary;
+        [IgnoreDataMember]
+        private Lazy<ILookup<string, string>> _tagsAsDictionary;
 
         public DogEvent()
         {
