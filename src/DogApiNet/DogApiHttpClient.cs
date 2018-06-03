@@ -62,6 +62,9 @@ namespace DogApiNet
             Data = content ?? throw new ArgumentNullException(nameof(content));
         }
 
+        public static DogApiHttpRequestContent EmptyJson { get; } =
+            new DogApiHttpRequestContent("application/json", new byte[0]);
+
         public string ContentType { get; }
         public byte[] Data { get; }
     }

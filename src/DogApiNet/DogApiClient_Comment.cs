@@ -62,8 +62,8 @@ namespace DogApiNet
 
         async Task ICommentApi.DeleteAsync(long id, CancellationToken? cancelToken)
         {
-            var data = new DogApiHttpRequestContent("application/json", new byte[0]);
-            await RequestAsync<NoJsonResponse>(HttpMethod.Delete, $"/api/v1/comments/{id}", null, data, cancelToken)
+            await RequestAsync<NoJsonResponse>(HttpMethod.Delete, $"/api/v1/comments/{id}", null,
+                    DogApiHttpRequestContent.EmptyJson, cancelToken)
                 .ConfigureAwait(false);
         }
 
