@@ -46,4 +46,60 @@ namespace DogApiNet.JsonFormatters
             }
         }
     }
+
+    public class DurableNullableInt64Formatter : IJsonFormatter<long?>
+    {
+        bool writeAsNumber;
+
+        public DurableNullableInt64Formatter()
+            : this(true)
+        {
+
+        }
+
+        public DurableNullableInt64Formatter(bool writeAsNumber)
+        {
+            this.writeAsNumber = writeAsNumber;
+        }
+
+        public void Serialize(ref JsonWriter writer, long? value, IJsonFormatterResolver formatterResolver)
+        {
+            if (value == null)
+            {
+                writer.WriteNull();
+            }
+            else
+            {
+                if (writeAsNumber)
+                {
+                    writer.WriteInt64(value.Value);
+                }
+                else
+                {
+                    writer.WriteString(value.ToString());
+                }
+            }
+        }
+
+        public long? Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
+        {
+            if (reader.ReadIsNull())
+            {
+                return null;
+            }
+            else
+            {
+                var token = reader.GetCurrentJsonToken();
+                if (token == JsonToken.Number)
+                {
+                    return reader.ReadInt64();
+                }
+                else
+                {
+                    var number = reader.ReadStringSegmentRaw();
+                    return Utf8Json.Internal.NumberConverter.ReadInt64(number.Array, number.Offset, out _);
+                }
+            }
+        }
+    }
 }
