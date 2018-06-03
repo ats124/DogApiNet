@@ -10,41 +10,15 @@ namespace DogApiNet
 {
     public interface ITimeboardApi
     {
-        Task<DogTimeboardCreateResult> CreateAsync(DogTimeboard timeboard, CancellationToken? cancelToken = null);
+        Task<DogTimeboard> CreateAsync(DogTimeboard timeboard, CancellationToken? cancelToken = null);
 
-        Task<DogTimeboardUpdateResult> UpdateAsync(DogTimeboard timeboard, CancellationToken? cancelToken = null);
+        Task<DogTimeboard> UpdateAsync(DogTimeboard timeboard, CancellationToken? cancelToken = null);
 
         Task DeleteAsync(long id, CancellationToken? cancelToken = null);
 
-        Task<DogTimeboardGetResult> GetAsync(long id, CancellationToken? cancelToken = null);
+        Task<DogTimeboard> GetAsync(long id, CancellationToken? cancelToken = null);
 
-        Task<DogTimeboardGetAllResult> GetAllAsync(CancellationToken? cancelToken = null);
-    }
-
-    public class DogTimeboardGetResult
-    {
-        [DataMember(Name = "dash")]
-        public DogTimeboard Timeboard { get; set; }
-
-        [DataMember(Name = "resource")]
-        public string Resource { get; set; }
-
-        [DataMember(Name = "url")]
-        public string Url { get; set; }
-    }
-
-    public class DogTimeboardCreateResult : DogTimeboardGetResult
-    {
-    }
-
-    public class DogTimeboardUpdateResult : DogTimeboardGetResult
-    {
-    }
-
-    public class DogTimeboardGetAllResult
-    {
-        [DataMember(Name = "dashes")]
-        public DogTimeboardSummary[] Timeboards { get; set; }
+        Task<DogTimeboardSummary[]> GetAllAsync(CancellationToken? cancelToken = null);
     }
 
     public class DogTimeboard
@@ -69,6 +43,12 @@ namespace DogApiNet
 
         [DataMember(Name = "modified")]
         public DateTimeOffset? Modified { get; set; }
+
+        [IgnoreDataMember]
+        public string Resource { get; set; }
+
+        [IgnoreDataMember]
+        public string Url { get; set; }
 
         public bool ShouldSerializeId() => false;
 
@@ -130,6 +110,24 @@ namespace DogApiNet
         public bool ReadOnly { get; set; }
     }
 
+    public class DogTimeboardGetAllResult
+    {
+        [DataMember(Name = "dashes")]
+        public DogTimeboardSummary[] Timeboards { get; set; }
+    }
+
+    public class DogTimeboardResult
+    {
+        [DataMember(Name = "dash")]
+        public DogTimeboard Timeboard { get; set; }
+
+        [DataMember(Name = "resource")]
+        public string Resource { get; set; }
+
+        [DataMember(Name = "url")]
+        public string Url { get; set; }
+    }
+
     partial class DogApiClient : ITimeboardApi
     {
         public ITimeboardApi Timeboard => this;
@@ -140,28 +138,57 @@ namespace DogApiNet
                 DogApiHttpRequestContent.EmptyJson, cancelToken).ConfigureAwait(false);
         }
 
-        async Task<DogTimeboardCreateResult> ITimeboardApi.CreateAsync(DogTimeboard timeboard,
+        async Task<DogTimeboard> ITimeboardApi.CreateAsync(DogTimeboard timeboard,
             CancellationToken? cancelToken)
         {
             var data = new DogApiHttpRequestContent("application/json", JsonSerializer.Serialize(timeboard));
-            return await RequestAsync<DogTimeboardCreateResult>(HttpMethod.Post, "/api/v1/dash", null, data,
+            var result = await RequestAsync<DogTimeboardResult>(HttpMethod.Post, "/api/v1/dash", null, data,
                 cancelToken).ConfigureAwait(false);
+            if (result.Timeboard != null)
+            {
+                result.Timeboard.Url = result.Url;
+                result.Timeboard.Resource = result.Resource;
+            }
+
+            return result.Timeboard;
         }
 
-        async Task<DogTimeboardUpdateResult> ITimeboardApi.UpdateAsync(DogTimeboard timeboard,
+        async Task<DogTimeboard> ITimeboardApi.UpdateAsync(DogTimeboard timeboard,
             CancellationToken? cancelToken)
         {
             var data = new DogApiHttpRequestContent("application/json", JsonSerializer.Serialize(timeboard));
-            return await RequestAsync<DogTimeboardUpdateResult>(HttpMethod.Put, $"/api/v1/dash/{timeboard.Id}", null,
+            var result = await RequestAsync<DogTimeboardResult>(HttpMethod.Put, $"/api/v1/dash/{timeboard.Id}",
+                null,
                 data, cancelToken).ConfigureAwait(false);
+            if (result.Timeboard != null)
+            {
+                result.Timeboard.Url = result.Url;
+                result.Timeboard.Resource = result.Resource;
+            }
+
+            return result.Timeboard;
         }
 
-        async Task<DogTimeboardGetResult> ITimeboardApi.GetAsync(long id, CancellationToken? cancelToken) =>
-            await RequestAsync<DogTimeboardGetResult>(HttpMethod.Get, $"/api/v1/dash/{id}", null, null, cancelToken)
-                .ConfigureAwait(false);
+        async Task<DogTimeboard> ITimeboardApi.GetAsync(long id, CancellationToken? cancelToken)
+        {
+            var result =
+                await RequestAsync<DogTimeboardResult>(HttpMethod.Get, $"/api/v1/dash/{id}", null, null, cancelToken)
+                    .ConfigureAwait(false);
+            if (result.Timeboard != null)
+            {
+                result.Timeboard.Url = result.Url;
+                result.Timeboard.Resource = result.Resource;
+            }
 
-        async Task<DogTimeboardGetAllResult> ITimeboardApi.GetAllAsync(CancellationToken? cancelToken) =>
-            await RequestAsync<DogTimeboardGetAllResult>(HttpMethod.Get, $"/api/v1/dash", null, null, cancelToken)
-                .ConfigureAwait(false);
+            return result.Timeboard;
+        }
+
+        async Task<DogTimeboardSummary[]> ITimeboardApi.GetAllAsync(CancellationToken? cancelToken)
+        {
+            var result =
+                await RequestAsync<DogTimeboardGetAllResult>(HttpMethod.Get, $"/api/v1/dash", null, null, cancelToken)
+                    .ConfigureAwait(false);
+            return result.Timeboards;
+        }
     }
 }
