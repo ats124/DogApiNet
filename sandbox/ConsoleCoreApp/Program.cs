@@ -24,7 +24,9 @@ namespace ConsoleCoreApp
                 //    Tags = new[] {"A", "B"}.ToLookup(x => x)
                 //};
                 //Console.WriteLine(JsonSerializer.ToJsonString(obj));
-                var tags = await client.Tag.GetAll();
+                //var tags = await client.Tag.GetAsync("ats-mac-mini.local");
+                var tags = await client.Tag.GetBySourceAsync("ats-mac-mini.local", "users");
+
             }
         }
 
