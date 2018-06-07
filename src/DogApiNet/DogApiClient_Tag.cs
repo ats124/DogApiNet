@@ -22,6 +22,8 @@ namespace DogApiNet
         Task<string[]> CreateAsync(string hostName, string[] tags, string source = null, CancellationToken? cancelToken = null);
 
         Task<string[]> UpdateAsync(string hostName, string[] tags, string source = null, CancellationToken? cancelToken = null);
+
+        Task DeleteAsync(string hostName, string source = null, CancellationToken? cancelToken = null);
     }
 
     public class DogTagGetAllResult
@@ -136,6 +138,17 @@ namespace DogApiNet
                         cancelToken)
                     .ConfigureAwait(false);
             return result?.Tags ?? new string[0];
+        }
+
+        async Task ITagApi.DeleteAsync(string hostName, string source, CancellationToken? cancelToken)
+        {
+            var @params = new NameValueCollection();
+            if (source != null) @params["source"] = source;
+
+            await RequestAsync<NoJsonResponse>(HttpMethod.Delete,
+                    $"/api/v1/tags/hosts/{Uri.EscapeDataString(hostName)}", @params, DogApiHttpRequestContent.EmptyJson,
+                    cancelToken)
+                .ConfigureAwait(false);
         }
     }
 }
