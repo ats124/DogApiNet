@@ -19,14 +19,10 @@ namespace ConsoleCoreApp
 
             using (var client = new DogApiClient(apiKey, appKey))
             {
-                //var obj = new DogTagGetAllResult()
-                //{
-                //    Tags = new[] {"A", "B"}.ToLookup(x => x)
-                //};
-                //Console.WriteLine(JsonSerializer.ToJsonString(obj));
-                //var tags = await client.Tag.GetAsync("ats-mac-mini.local");
-                var tags = await client.Tag.GetBySourceAsync("ats-mac-mini.local", "users");
-
+                var end = DateTimeOffset.Now;
+                var start = end.AddHours(-1);
+                var snapshot = await client.Graph.CreateAsync("system.load.1{*}", start, end);
+                snapshot = await client.Graph.CreateByGraphDefAsync(snapshot.GraphDefinition, start, end);
             }
         }
 
