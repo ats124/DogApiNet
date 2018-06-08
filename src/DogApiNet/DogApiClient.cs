@@ -65,6 +65,9 @@ namespace DogApiNet
                 throw new DogApiClientException("http request error", ex);
             }
 
+            if (content.RateLimit != null)
+                LatestRateLimit = content.RateLimit;
+
             if ((int)content.StatusCode >= 200 && (int)content.StatusCode < 300)
             {
                 if (typeof(T) == typeof(NoJsonResponse)) return default(T);
@@ -131,6 +134,8 @@ namespace DogApiNet
         private class NoJsonResponse
         {
         }
+
+        public DogApiRateLimit LatestRateLimit { get; private set; }
 
         #region IDisposable Support
 

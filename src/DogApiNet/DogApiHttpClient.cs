@@ -50,6 +50,7 @@ namespace DogApiNet
         public HttpStatusCode StatusCode { get; set; }
         public string MediaType { get; set; }
         public byte[] Data { get; set; }
+        public DogApiRateLimit RateLimit {get; set; }
     }
 
     public class DogApiHttpRequestContent
