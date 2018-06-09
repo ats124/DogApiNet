@@ -138,12 +138,12 @@ namespace DogApiNet
 
         async Task<DogScreenboard> IScreenboardApi.GetAsync(long id, CancellationToken? cancelToken) =>
             await RequestAsync<DogScreenboard>(HttpMethod.Get, $"/api/v1/screen/{id}", null,
-                DogApiHttpRequestContent.EmptyJson, cancelToken).ConfigureAwait(false);
+                null, cancelToken).ConfigureAwait(false);
 
         async Task<DogScreenboardSummary[]> IScreenboardApi.GetAllAsync(CancellationToken? cancelToken)
         {
             var result = await RequestAsync<DogScreenboardGetAllResult>(HttpMethod.Get, $"/api/v1/screen", null,
-                DogApiHttpRequestContent.EmptyJson, cancelToken).ConfigureAwait(false);
+                null, cancelToken).ConfigureAwait(false);
             return result.Screenboards;
         }
 
