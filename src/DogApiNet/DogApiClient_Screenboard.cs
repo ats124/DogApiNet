@@ -18,6 +18,10 @@ namespace DogApiNet
         Task<DogScreenboard> GetAsync(long id, CancellationToken? cancelToken = null);
 
         Task<DogScreenboardSummary[]> GetAllAsync(CancellationToken? cancelToken = null);
+
+        Task<DogScreenboardShareResult> ShareAsync(long id, CancellationToken? cancelToken = null);
+
+        Task RevokeAsync(long id, CancellationToken? cancelToken = null);
     }
 
     public class DogScreenboard
@@ -97,6 +101,15 @@ namespace DogApiNet
         public DogScreenboardSummary[] Screenboards { get; set; }
     }
 
+    public class DogScreenboardShareResult
+    {
+        [DataMember(Name = "board_id")]
+        public long Id { get; set; }
+
+        [DataMember(Name = "public_url")]
+        public string PublicUrl { get; set; }
+    }
+
     partial class DogApiClient : IScreenboardApi
     {
         public IScreenboardApi Screenboard => this;
@@ -123,17 +136,25 @@ namespace DogApiNet
                 DogApiHttpRequestContent.EmptyJson, cancelToken).ConfigureAwait(false);
         }
 
-        async Task<DogScreenboard> IScreenboardApi.GetAsync(long id, CancellationToken? cancelToken)
-        {
-            return await RequestAsync<DogScreenboard>(HttpMethod.Get, $"/api/v1/screen/{id}", null,
+        async Task<DogScreenboard> IScreenboardApi.GetAsync(long id, CancellationToken? cancelToken) =>
+            await RequestAsync<DogScreenboard>(HttpMethod.Get, $"/api/v1/screen/{id}", null,
                 DogApiHttpRequestContent.EmptyJson, cancelToken).ConfigureAwait(false);
-        }
 
         async Task<DogScreenboardSummary[]> IScreenboardApi.GetAllAsync(CancellationToken? cancelToken)
         {
             var result = await RequestAsync<DogScreenboardGetAllResult>(HttpMethod.Get, $"/api/v1/screen", null,
                 DogApiHttpRequestContent.EmptyJson, cancelToken).ConfigureAwait(false);
             return result.Screenboards;
+        }
+
+        async Task<DogScreenboardShareResult> IScreenboardApi.ShareAsync(long id, CancellationToken? cancelToken) =>
+            await RequestAsync<DogScreenboardShareResult>(HttpMethod.Post, $"/api/v1/screen/share/{id}", null,
+                DogApiHttpRequestContent.EmptyJson, cancelToken).ConfigureAwait(false);
+
+        async Task IScreenboardApi.RevokeAsync(long id, CancellationToken? cancelToken)
+        {
+            await RequestAsync<DogScreenboardShareResult>(HttpMethod.Delete, $"/api/v1/screen/share/{id}", null,
+                DogApiHttpRequestContent.EmptyJson, cancelToken).ConfigureAwait(false);
         }
     }
 }
