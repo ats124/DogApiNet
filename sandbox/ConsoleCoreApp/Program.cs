@@ -19,17 +19,14 @@ namespace ConsoleCoreApp
 
             using (var client = new DogApiClient(apiKey, appKey))
             {
-                var all = await client.Screenboard.GetAllAsync();
-                var board = await client.Screenboard.GetAsync(all[0].Id);
-                Console.WriteLine(board.GetWidgetsJsonString());
-                board.SetWidgetsJsonString(board.GetWidgetsJsonString());
-                board.Description = "hello";
-                var update = await client.Screenboard.UpdateAsync(board);
-                var create = await client.Screenboard.CreateAsync(update);
-                await client.Screenboard.DeleteAsync(create.Id);
-
-                var share = await client.Screenboard.ShareAsync(board.Id);
-                await client.Screenboard.RevokeAsync(board.Id);
+                var all = await client.Embed.GetAllAsync();
+                var embed = await client.Embed.CreateAsync(new DogEmbedCreateParameter("{\r\n  \"viz\": \"timeseries\",\r\n  \"status\": \"done\",\r\n  \"requests\": [\r\n    {\r\n      \"q\": \"avg:test.random{*}\",\r\n      \"type\": \"line\",\r\n      \"style\": {\r\n        \"palette\": \"dog_classic\",\r\n        \"type\": \"solid\",\r\n        \"width\": \"normal\"\r\n      },\r\n      \"conditional_formats\": [],\r\n      \"aggregator\": \"avg\"\r\n    }\r\n  ],\r\n  \"autoscale\": true,\r\n  \"events\": [\r\n    {\r\n      \"q\": \"test.random \",\r\n      \"tags_execution\": \"and\"\r\n    }\r\n  ]\r\n}")
+                {
+                    Title = "hoge",
+                    Legend = true,
+                    Timeframe = "1_hour",
+                    Size = "large",
+                });
             }
         }
 
