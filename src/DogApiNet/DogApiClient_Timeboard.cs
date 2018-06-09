@@ -35,6 +35,9 @@ namespace DogApiNet
         [DataMember(Name = "graphs")]
         public DogTimeboardGraph[] Graphs { get; set; }
 
+        [DataMember(Name = "template_variables")]
+        public DogTemplateVariable[] TemplateVariables { get; set; }
+
         [DataMember(Name = "read_only")]
         public bool? ReadOnly { get; set; }
 
@@ -51,6 +54,8 @@ namespace DogApiNet
         public string Url { get; set; }
 
         public bool ShouldSerializeId() => false;
+
+        public bool ShouldSerializeTemplateVariables() => TemplateVariables != null;
 
         public bool ShouldSerializeReadOnly() => ReadOnly.HasValue;
 
@@ -70,18 +75,6 @@ namespace DogApiNet
         public string GetDefinitionJsonString() => JsonSerializer.ToJsonString((object)Definition);
 
         public void SetDefinitionJsonString(string json) => Definition = JsonSerializer.Deserialize<dynamic>(json);
-    }
-
-    public class DogTimeboardTemplateVariable
-    {
-        [DataMember(Name = "name")]
-        public string Name { get; set; }
-
-        [DataMember(Name = "prefix")]
-        public string Prefix { get; set; }
-
-        [DataMember(Name = "default")]
-        public string Default { get; set; }
     }
 
     public class DogTimeboardSummary

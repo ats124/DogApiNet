@@ -167,4 +167,16 @@ namespace DogApiNet
         [DataMember(Name = "errors")]
         public string[] Errors { get; set; }
     }
+
+    public class DogTemplateVariable
+    {
+        [DataMember(Name = "name")]
+        public string Name { get; set; }
+
+        [DataMember(Name = "prefix")]
+        public string Prefix { get; set; }
+
+        [DataMember(Name = "default")]
+        public string Default { get; set; }
+    }
 }
