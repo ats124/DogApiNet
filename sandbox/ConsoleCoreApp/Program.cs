@@ -19,14 +19,7 @@ namespace ConsoleCoreApp
 
             using (var client = new DogApiClient(apiKey, appKey))
             {
-                var all = await client.Embed.GetAllAsync();
-                var embed = await client.Embed.CreateAsync(new DogEmbedCreateParameter("{\r\n  \"viz\": \"timeseries\",\r\n  \"status\": \"done\",\r\n  \"requests\": [\r\n    {\r\n      \"q\": \"avg:test.random{*}\",\r\n      \"type\": \"line\",\r\n      \"style\": {\r\n        \"palette\": \"dog_classic\",\r\n        \"type\": \"solid\",\r\n        \"width\": \"normal\"\r\n      },\r\n      \"conditional_formats\": [],\r\n      \"aggregator\": \"avg\"\r\n    }\r\n  ],\r\n  \"autoscale\": true,\r\n  \"events\": [\r\n    {\r\n      \"q\": \"test.random \",\r\n      \"tags_execution\": \"and\"\r\n    }\r\n  ]\r\n}")
-                {
-                    Title = "hoge",
-                    Legend = true,
-                    Timeframe = "1_hour",
-                    Size = "large",
-                });
+                var result = await client.Infrastructure.SearchAsync("metrics:");
             }
         }
 
