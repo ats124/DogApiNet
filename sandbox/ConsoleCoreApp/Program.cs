@@ -19,11 +19,13 @@ namespace ConsoleCoreApp
 
             using (var client = new DogApiClient(apiKey, appKey))
             {
-                var allResult = await client.Timeboard.GetAllAsync();
-                var getResult = await client.Timeboard.GetAsync(allResult[0].Id);
-                var createResult = await client.Timeboard.CreateAsync(getResult);
-                var updateResult = await client.Timeboard.UpdateAsync(createResult);
-                await client.Timeboard.DeleteAsync(updateResult.Id);
+                var all = await client.Screenboard.GetAllAsync();
+                var board = await client.Screenboard.GetAsync(all[0].Id);
+                board.Description = "hello";
+                var update = await client.Screenboard.UpdateAsync(board);
+                var create = await client.Screenboard.CreateAsync(update);
+                await client.Screenboard.DeleteAsync(create.Id);
+
             }
         }
 
