@@ -19,7 +19,18 @@ namespace ConsoleCoreApp
 
             using (var client = new DogApiClient(apiKey, appKey))
             {
-                var result = await client.Infrastructure.SearchAsync("metrics:");
+                var users = await client.User.GetAllAsync();
+                var user = await client.User.GetAsync(users[0].Handle);
+
+                var newUser = await client.User.CreateAsync("test@example.com", "test", "ro");
+                newUser.Name = "update name";
+                newUser.EMail = "update@example.com";
+                newUser.AccessRole = "adm";
+                newUser.Disabled = false;
+
+                var update = await client.User.UpdateAsync(newUser);
+
+                await client.User.DeleteAsync(update.Handle);
             }
         }
 
