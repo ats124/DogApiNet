@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using DogApiNet.Internal;
 using DogApiNet.JsonFormatters;
 using Utf8Json;
 using Utf8Json.Resolvers;
@@ -15,11 +16,11 @@ namespace DogApiNet
     {
         Task<DogEventPostResult> PostAsync(DogEvent evt, CancellationToken? cancelToken = null);
 
-        Task<DogEventGetResult> GetAsync(long eventId, CancellationToken? cancelToken = null);
+        Task<DogEvent> GetAsync(long eventId, CancellationToken? cancelToken = null);
 
-        Task<DogEventDeleteResult> DeleteAsync(long eventId, CancellationToken? cancelToken = null);
+        Task<long> DeleteAsync(long eventId, CancellationToken? cancelToken = null);
 
-        Task<DogEventQueryResult> QueryAsync(DateTimeOffset start, DateTimeOffset end, string priority = null,
+        Task<DogEvent[]> QueryAsync(DateTimeOffset start, DateTimeOffset end, string priority = null,
             string[] tags = null, CancellationToken? cancelToken = null);
     }
 
@@ -118,34 +119,6 @@ namespace DogApiNet
         }
     }
 
-    public class DogEventPostResult
-    {
-        [DataMember(Name = "event")]
-        public DogEvent Event { get; set; }
-
-        [DataMember(Name = "status")]
-        public string Status { get; set; }
-    }
-
-    public class DogEventGetResult
-    {
-        [DataMember(Name = "event")]
-        public DogEvent Event { get; set; }
-    }
-
-    public class DogEventDeleteResult
-    {
-        [DataMember(Name = "deleted_event_id")]
-        [JsonFormatter(typeof(DurableInt64Formatter))]
-        public long DeletedEventId { get; set; }
-    }
-
-    public class DogEventQueryResult
-    {
-        [DataMember(Name = "events")]
-        public DogEvent[] Events { get; set; }
-    }
-
     public class DogChildEvent
     {
         [DataMember(Name = "date_happened")]
@@ -158,6 +131,37 @@ namespace DogApiNet
         [DataMember(Name = "id")]
         [JsonFormatter(typeof(DurableInt64Formatter))]
         public long Id { get; set; }
+    }
+
+    public class DogEventPostResult
+    {
+        [DataMember(Name = "event")]
+        public DogEvent Event { get; set; }
+
+        [DataMember(Name = "status")]
+        public string Status { get; set; }
+    }
+
+    namespace Internal
+    {
+        public class DogEventGetResult
+        {
+            [DataMember(Name = "event")]
+            public DogEvent Event { get; set; }
+        }
+
+        public class DogEventDeleteResult
+        {
+            [DataMember(Name = "deleted_event_id")]
+            [JsonFormatter(typeof(DurableInt64Formatter))]
+            public long DeletedEventId { get; set; }
+        }
+
+        public class DogEventQueryResult
+        {
+            [DataMember(Name = "events")]
+            public DogEvent[] Events { get; set; }
+        }
     }
 
     partial class DogApiClient : IEventApi
@@ -181,15 +185,15 @@ namespace DogApiNet
             return result;
         }
 
-        async Task<DogEventGetResult> IEventApi.GetAsync(long eventId, CancellationToken? cancelToken) =>
-            await RequestAsync<DogEventGetResult>(HttpMethod.Get, $"/api/v1/events/{eventId}", null, null, cancelToken)
-                .ConfigureAwait(false);
+        async Task<DogEvent> IEventApi.GetAsync(long eventId, CancellationToken? cancelToken) =>
+            (await RequestAsync<DogEventGetResult>(HttpMethod.Get, $"/api/v1/events/{eventId}", null, null, cancelToken)
+                .ConfigureAwait(false)).Event;
 
-        async Task<DogEventDeleteResult> IEventApi.DeleteAsync(long eventId, CancellationToken? cancelToken) =>
-            await RequestAsync<DogEventDeleteResult>(HttpMethod.Delete, $"/api/v1/events/{eventId}", null, null,
-                cancelToken).ConfigureAwait(false);
+        async Task<long> IEventApi.DeleteAsync(long eventId, CancellationToken? cancelToken) =>
+            (await RequestAsync<DogEventDeleteResult>(HttpMethod.Delete, $"/api/v1/events/{eventId}", null, null,
+                cancelToken).ConfigureAwait(false)).DeletedEventId;
 
-        async Task<DogEventQueryResult> IEventApi.QueryAsync(DateTimeOffset start, DateTimeOffset end, string priority,
+        async Task<DogEvent[]> IEventApi.QueryAsync(DateTimeOffset start, DateTimeOffset end, string priority,
             string[] tags, CancellationToken? cancelToken)
         {
             var @params = new NameValueCollection
@@ -199,8 +203,8 @@ namespace DogApiNet
             };
             if (priority != null) @params.Add("priority", priority);
             if (tags != null && tags.Length > 0) @params.Add("tags", string.Join(",", tags));
-            return await RequestAsync<DogEventQueryResult>(HttpMethod.Get, "/api/v1/events", @params, null, cancelToken)
-                .ConfigureAwait(false);
+            return (await RequestAsync<DogEventQueryResult>(HttpMethod.Get, "/api/v1/events", @params, null,
+                cancelToken).ConfigureAwait(false)).Events;
         }
     }
 }
