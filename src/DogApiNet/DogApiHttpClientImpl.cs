@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Resources;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,8 +12,18 @@ namespace DogApiNet
 {
     internal class DogApiHttpClientImpl : DogApiHttpClient
     {
-        private static readonly HttpClient
-            HttpClient = new HttpClient {Timeout = Timeout.InfiniteTimeSpan}; // CancellationTokenでタイムアウトを指定するので;
+        private static readonly HttpClient HttpClient;
+
+        static DogApiHttpClientImpl()
+        {
+            var handler = new HttpClientHandler {UseCookies = false};
+            HttpClient = new HttpClient(handler) {Timeout = Timeout.InfiniteTimeSpan};
+        }
+
+        public DogApiHttpClientImpl(string dataDogHost)
+        {
+            ServicePointManager.FindServicePoint(new Uri(dataDogHost)).ConnectionLeaseTimeout = 60 * 1000;
+        }
 
         public override async Task<DogApiHttpResponseContent> RequestAsync(HttpMethod method, string url,
             NameValueCollection headers, NameValueCollection @params, DogApiHttpRequestContent data, TimeSpan timeOut)
@@ -52,7 +61,7 @@ namespace DogApiNet
                 using (var response = await HttpClient.SendAsync(request, cancelToken).ConfigureAwait(false))
                 {
                     try
-                    {                        
+                    {
                         var responseHeaders = response.Headers;
                         var limit = GetResponseHeaderValue(responseHeaders, "X-RateLimit-Limit");
                         var period = GetResponseHeaderValue(responseHeaders, "X-RateLimit-Period");
@@ -60,9 +69,7 @@ namespace DogApiNet
                         var reset = GetResponseHeaderValue(responseHeaders, "X-RateLimit-Reset");
                         DogApiRateLimit rateLimit = null;
                         if (limit != null && period != null && remaining != null && reset != null)
-                        {
                             rateLimit = new DogApiRateLimit(limit.Value, period.Value, remaining.Value, reset.Value);
-                        }
 
                         var content = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
 
@@ -71,7 +78,7 @@ namespace DogApiNet
                             StatusCode = response.StatusCode,
                             Data = content,
                             MediaType = response.Content.Headers?.ContentType?.MediaType,
-                            RateLimit = rateLimit,
+                            RateLimit = rateLimit
                         };
                     }
                     catch (OperationCanceledException)
@@ -107,10 +114,7 @@ namespace DogApiNet
             if (header.TryGetValues(name, out var values))
             {
                 var value = values.FirstOrDefault();
-                if (!string.IsNullOrEmpty(value) && int.TryParse(value, out var intValue))
-                {
-                    return intValue;
-                }
+                if (!string.IsNullOrEmpty(value) && int.TryParse(value, out var intValue)) return intValue;
             }
 
             return null;
