@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
 using Utf8Json;
+using Utf8Json.Internal;
 
 namespace DogApiNet.JsonFormatters
 {
     public sealed class DurableUnixTimeSecondsDateTimeOffsetFormatter : IJsonFormatter<DateTimeOffset>
     {
-        public static readonly IJsonFormatter<DateTimeOffset> Default = new DurableUnixTimeSecondsDateTimeOffsetFormatter();
+        public static readonly IJsonFormatter<DateTimeOffset> Default =
+            new DurableUnixTimeSecondsDateTimeOffsetFormatter();
 
-        bool writeAsNumber;
+        private readonly bool _writeAsNumber;
 
         public DurableUnixTimeSecondsDateTimeOffsetFormatter() : this(true)
         {
@@ -18,7 +17,7 @@ namespace DogApiNet.JsonFormatters
 
         public DurableUnixTimeSecondsDateTimeOffsetFormatter(bool writeAsNumber)
         {
-            this.writeAsNumber = writeAsNumber;
+            _writeAsNumber = writeAsNumber;
         }
 
         public DateTimeOffset Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
@@ -32,7 +31,7 @@ namespace DogApiNet.JsonFormatters
             else
             {
                 var number = reader.ReadStringSegmentRaw();
-                lngValue = Utf8Json.Internal.NumberConverter.ReadInt64(number.Array, number.Offset, out _);
+                lngValue = NumberConverter.ReadInt64(number.Array, number.Offset, out _);
             }
 
             return DogApiUtil.UnixTimeSecondsToDateTimeOffset(lngValue);
@@ -41,22 +40,19 @@ namespace DogApiNet.JsonFormatters
         public void Serialize(ref JsonWriter writer, DateTimeOffset value, IJsonFormatterResolver formatterResolver)
         {
             var seconds = value.ToUnixTimeSeconds();
-            if (writeAsNumber)
-            {
+            if (_writeAsNumber)
                 writer.WriteInt64(seconds);
-            }
             else
-            {
                 writer.WriteString(seconds.ToString());
-            }
         }
     }
 
     public sealed class DurableNullableUnixTimeSecondsDateTimeOffsetFormatter : IJsonFormatter<DateTimeOffset?>
     {
-        public static readonly IJsonFormatter<DateTimeOffset?> Default = new DurableNullableUnixTimeSecondsDateTimeOffsetFormatter();
+        public static readonly IJsonFormatter<DateTimeOffset?> Default =
+            new DurableNullableUnixTimeSecondsDateTimeOffsetFormatter();
 
-        bool writeAsNumber;
+        private readonly bool _writeAsNumber;
 
         public DurableNullableUnixTimeSecondsDateTimeOffsetFormatter() : this(true)
         {
@@ -64,34 +60,26 @@ namespace DogApiNet.JsonFormatters
 
         public DurableNullableUnixTimeSecondsDateTimeOffsetFormatter(bool writeAsNumber)
         {
-            this.writeAsNumber = writeAsNumber;
+            _writeAsNumber = writeAsNumber;
         }
 
         public DateTimeOffset? Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
         {
-            if (reader.ReadIsNull())
+            if (reader.ReadIsNull()) return null;
+
+            var token = reader.GetCurrentJsonToken();
+            if (token == JsonToken.Number)
             {
-                return null;
+                reader.ReadInt64();
             }
             else
             {
-                var token = reader.GetCurrentJsonToken();
-                long lngValue;
-                if (token == JsonToken.Number)
-                {
-                    lngValue = reader.ReadInt64();
-                }
-                else
-                {
-                    var number = reader.ReadStringSegmentRaw();
-                    lngValue = Utf8Json.Internal.NumberConverter.ReadInt64(number.Array, number.Offset, out var readCount);
-                    if (readCount == 0)
-                    {
-                        return null;
-                    }
-                }
-                return DogApiUtil.UnixTimeSecondsToDateTimeOffset(reader.ReadInt64());
+                var number = reader.ReadStringSegmentRaw();
+                NumberConverter.ReadInt64(number.Array, number.Offset, out var readCount);
+                if (readCount == 0) return null;
             }
+
+            return DogApiUtil.UnixTimeSecondsToDateTimeOffset(reader.ReadInt64());
         }
 
         public void Serialize(ref JsonWriter writer, DateTimeOffset? value, IJsonFormatterResolver formatterResolver)
@@ -103,14 +91,10 @@ namespace DogApiNet.JsonFormatters
             else
             {
                 var seconds = value.Value.ToUnixTimeSeconds();
-                if (writeAsNumber)
-                {
+                if (_writeAsNumber)
                     writer.WriteInt64(seconds);
-                }
                 else
-                {
                     writer.WriteString(seconds.ToString());
-                }
             }
         }
     }

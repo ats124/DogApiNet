@@ -1,22 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
-using System.Collections.ObjectModel;
 using Utf8Json;
 
 namespace DogApiNet.JsonFormatters
 {
     public abstract class OptionalPropertySupport<T> where T : OptionalPropertySupport<T>
     {
-        static readonly IReadOnlyDictionary<string, OptionalPropertyInfo> optionalPropertyInfos;
-        static readonly IReadOnlyDictionary<string, OptionalPropertyInfo> optionalPropertyInfosByJsonPropertyName;
+        private static readonly IReadOnlyDictionary<string, OptionalPropertyInfo> optionalPropertyInfos;
 
-        internal IReadOnlyDictionary<string, OptionalPropertyInfo> OptionalPropertyInfos => optionalPropertyInfos;
-
-        internal IReadOnlyDictionary<string, OptionalPropertyInfo> OptionalPropertyInfosByJsonPropertyName => optionalPropertyInfosByJsonPropertyName;
+        private static readonly IReadOnlyDictionary<string, OptionalPropertyInfo>
+            optionalPropertyInfosByJsonPropertyName;
 
         internal readonly Dictionary<string, object> BackingFields;
 
@@ -28,39 +26,50 @@ namespace DogApiNet.JsonFormatters
                 string jsonFieldName = null;
                 object formatter = null;
                 foreach (var attr in prop.GetCustomAttributes(false))
-                {
-                    if (attr is DataMemberAttribute dataMember)
+                    switch (attr)
                     {
-                        jsonFieldName = dataMember.Name;
+                        case DataMemberAttribute dataMember:
+                            jsonFieldName = dataMember.Name;
+                            break;
+                        case JsonFormatterAttribute json:
+                            formatter = Activator.CreateInstance(json.FormatterType, json.Arguments);
+                            break;
                     }
-                    else if (attr is JsonFormatterAttribute json)
-                    {
-                        formatter = Activator.CreateInstance(json.FormatterType, json.Arguments) ;
-                    }
-                }
-                infos[prop.Name] = new OptionalPropertyInfo(prop.Name, prop.PropertyType, jsonFieldName, formatter);
+
+                var shouldSerialize = typeof(T).GetMethod($"ShouldSerialize{prop.Name}");
+                var shouldSerializeDelegate =
+                    shouldSerialize != null ? Delegate.CreateDelegate(typeof(Func<T, bool>), shouldSerialize) : null;
+                infos[prop.Name] = new OptionalPropertyInfo(prop.Name, prop.PropertyType, jsonFieldName, formatter,
+                    shouldSerializeDelegate);
             }
 
             optionalPropertyInfos = new ReadOnlyDictionary<string, OptionalPropertyInfo>(infos);
-            optionalPropertyInfosByJsonPropertyName = new ReadOnlyDictionary<string, OptionalPropertyInfo>(infos.Values.ToDictionary(x => x.JsonPropertyName ?? x.PropertyName));
+            optionalPropertyInfosByJsonPropertyName =
+                new ReadOnlyDictionary<string, OptionalPropertyInfo>(
+                    infos.Values.ToDictionary(x => x.JsonPropertyName ?? x.PropertyName));
         }
 
-        public OptionalPropertySupport()
+        protected OptionalPropertySupport()
         {
             BackingFields = new Dictionary<string, object>();
         }
 
+        internal IReadOnlyDictionary<string, OptionalPropertyInfo> OptionalPropertyInfos => optionalPropertyInfos;
+
+        internal IReadOnlyDictionary<string, OptionalPropertyInfo> OptionalPropertyInfosByJsonPropertyName =>
+            optionalPropertyInfosByJsonPropertyName;
+
         protected void SetValue<T1>(T1 value, [CallerMemberName] string member = "")
-            => BackingFields[member] = value;
+        {
+            BackingFields[member] = value;
+        }
 
-        protected T1 GetValue<T1>(T1 defaultValue = default(T1), [CallerMemberName] string member = "")
-            => BackingFields.TryGetValue(member, out var value) ? (T1)value : defaultValue;
+        protected T1 GetValue<T1>(T1 defaultValue = default(T1), [CallerMemberName] string member = "") =>
+            BackingFields.TryGetValue(member, out var value) ? (T1)value : defaultValue;
 
-        protected bool IsSet(string member)
-            => BackingFields.ContainsKey(member);
+        protected bool IsSet(string member) => BackingFields.ContainsKey(member);
 
-        protected bool Unset(string member)
-            => BackingFields.Remove(member);
+        protected bool Unset(string member) => BackingFields.Remove(member);
 
         public bool IsSet<TValue>(Expression<Func<T, TValue>> member)
         {
@@ -81,20 +90,24 @@ namespace DogApiNet.JsonFormatters
 
     internal class OptionalPropertyInfo
     {
-        public string PropertyName { get; private set; }
-
-        public Type PropertyType { get; private set; }
-        
-        public string JsonPropertyName { get; private set; }
-
-        public object Formatter { get; private set; }
-
-        public OptionalPropertyInfo(string propertyName, Type propertyType, string jsonFieldName, object formatter)
+        public OptionalPropertyInfo(string propertyName, Type propertyType, string jsonFieldName, object formatter,
+            Delegate shouldSerialize)
         {
             PropertyName = propertyName;
             PropertyType = propertyType;
             JsonPropertyName = jsonFieldName;
             Formatter = formatter;
+            ShouldSerialize = shouldSerialize;
         }
+
+        public string PropertyName { get; }
+
+        public Type PropertyType { get; }
+
+        public string JsonPropertyName { get; }
+
+        public object Formatter { get; }
+
+        public Delegate ShouldSerialize { get; }
     }
 }

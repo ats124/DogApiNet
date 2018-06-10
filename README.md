@@ -8,7 +8,7 @@ DogApiNet - .NET client for Datadog's API
 Getting started from downloading NuGet packages.
 
 ```
-PM> Install-Package DogApiNet -Version 1.0.0-alpha5
+PM> Install-Package DogApiNet -Version 1.0.0
 ```
 
 ## Usage
