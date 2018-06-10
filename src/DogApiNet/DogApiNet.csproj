@@ -6,12 +6,13 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Authors>ats124</Authors>
         <PackageLicenseUrl>https://github.com/ats124/DogApiNet/blob/master/LICENSE</PackageLicenseUrl>
-        <PackageTags>Datadog</PackageTags>
+        <PackageTags>Datadog DatadogAPI</PackageTags>
         <PackageProjectUrl>https://github.com/ats124/DogApiNet</PackageProjectUrl>
-    <Version>1.0.0-alpha6</Version>
-    <AssemblyVersion>1.0.0.6</AssemblyVersion>
-    <FileVersion>1.0.0.6</FileVersion>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.7</AssemblyVersion>
+    <FileVersion>1.0.0.7</FileVersion>
     <Description>.NET client for Datadog's API</Description>
+    <PackageReleaseNotes>First Official Release</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
