@@ -2,6 +2,7 @@
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using DogApiNet.Internal;
 using DogApiNet.JsonFormatters;
 using Utf8Json;
 
@@ -40,10 +41,13 @@ namespace DogApiNet
         public bool ShouldSerializeUrl() => false;
     }
 
-    public class DogCommentCreateUpdateResult
+    namespace Internal
     {
-        [DataMember(Name = "comment")]
-        public DogComment Comment { get; set; }
+        public class DogCommentCreateUpdateResult
+        {
+            [DataMember(Name = "comment")]
+            public DogComment Comment { get; set; }
+        }
     }
 
     partial class DogApiClient : ICommentApi

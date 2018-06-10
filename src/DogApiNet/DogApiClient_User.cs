@@ -2,6 +2,7 @@
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using DogApiNet.Internal;
 using Utf8Json;
 
 namespace DogApiNet
@@ -72,16 +73,19 @@ namespace DogApiNet
         public bool ShouldSerializeAccessRole() => !string.IsNullOrEmpty(AccessRole);
     }
 
-    public class DogUserResult
+    namespace Internal
     {
-        [DataMember(Name = "user")]
-        public DogUser User { get; set; }
-    }
+        public class DogUserResult
+        {
+            [DataMember(Name = "user")]
+            public DogUser User { get; set; }
+        }
 
-    public class DogUserGetAllResult
-    {
-        [DataMember(Name = "users")]
-        public DogUser[] Users { get; set; }
+        public class DogUserGetAllResult
+        {
+            [DataMember(Name = "users")]
+            public DogUser[] Users { get; set; }
+        }
     }
 
     partial class DogApiClient : IUserApi

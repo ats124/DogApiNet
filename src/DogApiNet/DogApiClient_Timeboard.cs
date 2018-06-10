@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using DogApiNet.Internal;
 using DogApiNet.JsonFormatters;
 using Utf8Json;
 
@@ -103,22 +104,25 @@ namespace DogApiNet
         public bool ReadOnly { get; set; }
     }
 
-    public class DogTimeboardGetAllResult
+    namespace Internal
     {
-        [DataMember(Name = "dashes")]
-        public DogTimeboardSummary[] Timeboards { get; set; }
-    }
+        public class DogTimeboardGetAllResult
+        {
+            [DataMember(Name = "dashes")]
+            public DogTimeboardSummary[] Timeboards { get; set; }
+        }
 
-    public class DogTimeboardResult
-    {
-        [DataMember(Name = "dash")]
-        public DogTimeboard Timeboard { get; set; }
+        public class DogTimeboardResult
+        {
+            [DataMember(Name = "dash")]
+            public DogTimeboard Timeboard { get; set; }
 
-        [DataMember(Name = "resource")]
-        public string Resource { get; set; }
+            [DataMember(Name = "resource")]
+            public string Resource { get; set; }
 
-        [DataMember(Name = "url")]
-        public string Url { get; set; }
+            [DataMember(Name = "url")]
+            public string Url { get; set; }
+        }
     }
 
     partial class DogApiClient : ITimeboardApi

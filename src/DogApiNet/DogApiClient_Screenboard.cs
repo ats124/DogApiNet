@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using DogApiNet.Internal;
 using Utf8Json;
 
 namespace DogApiNet
@@ -95,10 +96,13 @@ namespace DogApiNet
         public string Resource { get; set; }
     }
 
-    public class DogScreenboardGetAllResult
+    namespace Internal
     {
-        [DataMember(Name = "screenboards")]
-        public DogScreenboardSummary[] Screenboards { get; set; }
+        public class DogScreenboardGetAllResult
+        {
+            [DataMember(Name = "screenboards")]
+            public DogScreenboardSummary[] Screenboards { get; set; }
+        }
     }
 
     public class DogScreenboardShareResult
