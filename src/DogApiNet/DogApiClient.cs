@@ -26,7 +26,7 @@ namespace DogApiNet
             ApiKey = apiKey;
             AppKey = appKey;
             DataDogHost = dataDogHost ?? DefaultDataDogHost;
-            _httpClient = httpClient ?? new DogApiHttpClientImpl();
+            _httpClient = httpClient ?? new DogApiHttpClientImpl(DataDogHost);
             _leaveDispose = leaveDispose;
         }
 

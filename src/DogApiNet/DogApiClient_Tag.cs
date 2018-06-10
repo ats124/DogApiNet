@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using DogApiNet.Internal;
 using Utf8Json;
 
 namespace DogApiNet
@@ -19,44 +20,49 @@ namespace DogApiNet
         Task<ILookup<string, string>> GetBySourceAsync(string hostName, string source = null,
             CancellationToken? cancelToken = null);
 
-        Task<string[]> CreateAsync(string hostName, string[] tags, string source = null, CancellationToken? cancelToken = null);
+        Task<string[]> CreateAsync(string hostName, string[] tags, string source = null,
+            CancellationToken? cancelToken = null);
 
-        Task<string[]> UpdateAsync(string hostName, string[] tags, string source = null, CancellationToken? cancelToken = null);
+        Task<string[]> UpdateAsync(string hostName, string[] tags, string source = null,
+            CancellationToken? cancelToken = null);
 
         Task DeleteAsync(string hostName, string source = null, CancellationToken? cancelToken = null);
     }
 
-    public class DogTagGetAllResult
+    namespace Internal
     {
-        [DataMember(Name = "tags")]
-        public IDictionary<string, string[]> Tags { get; set; }
-    }
+        public class DogTagGetAllResult
+        {
+            [DataMember(Name = "tags")]
+            public IDictionary<string, string[]> Tags { get; set; }
+        }
 
-    public class DogTagGetResult
-    {
-        [DataMember(Name = "tags")]
-        public string[] Tags { get; set; }
-    }
+        public class DogTagGetResult
+        {
+            [DataMember(Name = "tags")]
+            public string[] Tags { get; set; }
+        }
 
-    public class DogTagGetBySourceResult
-    {
-        [DataMember(Name = "tags")]
-        public IDictionary<string, string[]> Tags { get; set; }
-    }
+        public class DogTagGetBySourceResult
+        {
+            [DataMember(Name = "tags")]
+            public IDictionary<string, string[]> Tags { get; set; }
+        }
 
-    public class DogTagCreateUpdateParameter
-    {
-        [DataMember(Name = "tags")]
-        public string[] Tags { get; set; }
-    }
+        public class DogTagCreateUpdateParameter
+        {
+            [DataMember(Name = "tags")]
+            public string[] Tags { get; set; }
+        }
 
-    public class DogTagCreateUpdateResult
-    {
-        [DataMember(Name = "hostname")]
-        public string[] HostName { get; set; }
+        public class DogTagCreateUpdateResult
+        {
+            [DataMember(Name = "hostname")]
+            public string[] HostName { get; set; }
 
-        [DataMember(Name = "tags")]
-        public string[] Tags { get; set; }
+            [DataMember(Name = "tags")]
+            public string[] Tags { get; set; }
+        }
     }
 
     partial class DogApiClient : ITagApi
@@ -108,7 +114,8 @@ namespace DogApiNet
                 .ToLookup(x => x.key, x => x.value);
         }
 
-        async Task<string[]> ITagApi.CreateAsync(string hostName, string[] tags, string source, CancellationToken? cancelToken)
+        async Task<string[]> ITagApi.CreateAsync(string hostName, string[] tags, string source,
+            CancellationToken? cancelToken)
         {
             var @params = new NameValueCollection();
             if (source != null) @params["source"] = source;
@@ -124,7 +131,8 @@ namespace DogApiNet
             return result?.Tags ?? new string[0];
         }
 
-        async Task<string[]> ITagApi.UpdateAsync(string hostName, string[] tags, string source, CancellationToken? cancelToken)
+        async Task<string[]> ITagApi.UpdateAsync(string hostName, string[] tags, string source,
+            CancellationToken? cancelToken)
         {
             var @params = new NameValueCollection();
             if (source != null) @params["source"] = source;

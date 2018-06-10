@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using DogApiNet.Internal;
 using Utf8Json;
 
 namespace DogApiNet
@@ -131,49 +132,52 @@ namespace DogApiNet
         public string Name { get; set; }
     }
 
-    public class DogDashboardListCreateUpdateParameter
+    namespace Internal
     {
-        [DataMember(Name = "name")]
-        public string Name { get; set; }
-    }
+        public class DogDashboardListCreateUpdateParameter
+        {
+            [DataMember(Name = "name")]
+            public string Name { get; set; }
+        }
 
-    public class DogDashboardListGetAllResult
-    {
-        [DataMember(Name = "dashboard_lists")]
-        public DogDashboardList[] DashboardLists { get; set; }
-    }
+        public class DogDashboardListGetAllResult
+        {
+            [DataMember(Name = "dashboard_lists")]
+            public DogDashboardList[] DashboardLists { get; set; }
+        }
 
-    public class DogDashboardListGetItemsResult
-    {
-        [DataMember(Name = "total")]
-        public int Total { get; set; }
+        public class DogDashboardListGetItemsResult
+        {
+            [DataMember(Name = "total")]
+            public int Total { get; set; }
 
-        [DataMember(Name = "dashboards")]
-        public DogDashboard[] Dashboards { get; set; }
-    }
+            [DataMember(Name = "dashboards")]
+            public DogDashboard[] Dashboards { get; set; }
+        }
 
-    public class DogDashboardListAddUpdateItemsParameter
-    {
-        [DataMember(Name = "dashboards")]
-        public DogDashboardListItem[] Dashboards { get; set; }
-    }
+        public class DogDashboardListAddUpdateItemsParameter
+        {
+            [DataMember(Name = "dashboards")]
+            public DogDashboardListItem[] Dashboards { get; set; }
+        }
 
-    public class DogDashboardListAddItemsResult
-    {
-        [DataMember(Name = "added_dashboards_to_list")]
-        public DogDashboardListItem[] AddedDashboardsToList { get; set; }
-    }
+        public class DogDashboardListAddItemsResult
+        {
+            [DataMember(Name = "added_dashboards_to_list")]
+            public DogDashboardListItem[] AddedDashboardsToList { get; set; }
+        }
 
-    public class DogDashboardListUpdateItemsResult
-    {
-        [DataMember(Name = "dashboards")]
-        public DogDashboardListItem[] Dashboards { get; set; }
-    }
+        public class DogDashboardListUpdateItemsResult
+        {
+            [DataMember(Name = "dashboards")]
+            public DogDashboardListItem[] Dashboards { get; set; }
+        }
 
-    public class DogDashboardListDeleteItemsResult
-    {
-        [DataMember(Name = "deleted_dashboards_from_list")]
-        public DogDashboardListItem[] DdeletedDashboardsFromList { get; set; }
+        public class DogDashboardListDeleteItemsResult
+        {
+            [DataMember(Name = "deleted_dashboards_from_list")]
+            public DogDashboardListItem[] DdeletedDashboardsFromList { get; set; }
+        }
     }
 
     partial class DogApiClient : IDashboardListApi

@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using DogApiNet.Internal;
 using DogApiNet.JsonFormatters;
 using Utf8Json;
 using Utf8Json.Resolvers;
@@ -93,19 +94,6 @@ namespace DogApiNet
         public int TotalActive { get; set; }
     }
 
-    public class DogHostMuteParameter
-    {
-        [DataMember(Name = "end")]
-        [JsonFormatter(typeof(NullableUnixTimeSecondsDateTimeOffsetFormatter))]
-        public DateTimeOffset? End { get; set; }
-
-        [DataMember(Name = "message")]
-        public string Message { get; set; }
-
-        [DataMember(Name = "override")]
-        public bool? Override { get; set; }
-    }
-
     public class DogHostMuteResult
     {
         [DataMember(Name = "action")]
@@ -129,6 +117,22 @@ namespace DogApiNet
 
         [DataMember(Name = "hostname")]
         public string HostName { get; set; }
+    }
+
+    namespace Internal
+    {
+        public class DogHostMuteParameter
+        {
+            [DataMember(Name = "end")]
+            [JsonFormatter(typeof(NullableUnixTimeSecondsDateTimeOffsetFormatter))]
+            public DateTimeOffset? End { get; set; }
+
+            [DataMember(Name = "message")]
+            public string Message { get; set; }
+
+            [DataMember(Name = "override")]
+            public bool? Override { get; set; }
+        }
     }
 
     partial class DogApiClient : IHostApi

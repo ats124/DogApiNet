@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using DogApiNet.Internal;
 
 namespace DogApiNet
 {
@@ -12,10 +13,13 @@ namespace DogApiNet
         Task<IDictionary<string, string[]>> SearchAsync(string q, CancellationToken? cancelToken = null);
     }
 
-    public class DogInfrastructureSearchResult
+    namespace Internal
     {
-        [DataMember(Name = "results")]
-        public IDictionary<string, string[]> Results { get; set; }
+        public class DogInfrastructureSearchResult
+        {
+            [DataMember(Name = "results")]
+            public IDictionary<string, string[]> Results { get; set; }
+        }
     }
 
     partial class DogApiClient : IInfrastructureApi

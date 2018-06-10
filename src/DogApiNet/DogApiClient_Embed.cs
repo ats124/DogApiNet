@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DogApiNet.Internal;
 
 namespace DogApiNet
 {
@@ -61,10 +62,13 @@ namespace DogApiNet
         public long SharedBy { get; set; }
     }
 
-    public class DogEmbedGetAllResult
+    namespace Internal
     {
-        [DataMember(Name = "embedded_graphs")]
-        public DogEmbedGraph[] EmbeddedGraphs { get; set; }
+        public class DogEmbedGetAllResult
+        {
+            [DataMember(Name = "embedded_graphs")]
+            public DogEmbedGraph[] EmbeddedGraphs { get; set; }
+        }
     }
 
     partial class DogApiClient : IEmbedApi
@@ -92,7 +96,8 @@ namespace DogApiNet
                 cancelToken).ConfigureAwait(false);
 
         async Task<DogEmbedGraph[]> IEmbedApi.GetAllAsync(CancellationToken? cancelToken) =>
-            (await RequestAsync<DogEmbedGetAllResult>(HttpMethod.Get, $"/api/v1/graph/embed", null, null, cancelToken).ConfigureAwait(false)).EmbeddedGraphs;
+            (await RequestAsync<DogEmbedGetAllResult>(HttpMethod.Get, $"/api/v1/graph/embed", null, null, cancelToken)
+                .ConfigureAwait(false)).EmbeddedGraphs;
 
         async Task<DogEmbedGraph> IEmbedApi.GetAsync(string id, CancellationToken? cancelToken) =>
             await RequestAsync<DogEmbedGraph>(HttpMethod.Get, $"/api/v1/graph/embed/{id}", null, null, cancelToken)
